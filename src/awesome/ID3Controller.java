@@ -1,3 +1,4 @@
+package awesome;
 public class ID3Controller {
 
 	/**
