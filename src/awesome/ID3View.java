@@ -17,7 +17,7 @@ public class ID3View extends JFrame {
 		File homeDir = FileSystemView.getFileSystemView().getHomeDirectory();
 		
 		setSize(500, 500);
-		setTitle("awesome-id3");
+		setTitle("Awesome ID3");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //TODO: Change to ID3Controller.exitApplication()
 		
 		//TODO: Maybe we should create a split pane here so that the user can resize the tree.
@@ -87,42 +87,43 @@ public class ID3View extends JFrame {
 	
 	private void createDetailForm(){
 		
-		//TODO: Change layout manager
-		
 		JPanel detailPanel = new JPanel();
+		detailPanel.setLayout(new BorderLayout());
+		
 		JPanel textDetailPanel = new JPanel();
+		GridBagLayout textDetailLayout = new GridBagLayout();
+		textDetailPanel.setLayout(textDetailLayout);
+		GridBagConstraints textDetailConstraints = 
+				new GridBagConstraints(GridBagConstraints.RELATIVE, GridBagConstraints.RELATIVE, 4, 2,
+						0.0, 0.0, GridBagConstraints.BASELINE_LEADING, GridBagConstraints.HORIZONTAL, new Insets(10,20,0,5), 0, 0);
+		GridBagConstraints textDetailConstraintsFill = (GridBagConstraints) textDetailConstraints.clone();
+		textDetailConstraintsFill.weightx = 0.5;
+		textDetailConstraintsFill.insets = new Insets(10,5,0,20);
 		
-		textDetailPanel.setLayout(new GridLayout(4,1));
-		
-		JPanel titlePanel = new JPanel();
 		JLabel titleLabel = new JLabel("Title:");
-		titlePanel.add(titleLabel, BorderLayout.WEST);
+		textDetailPanel.add(titleLabel, textDetailConstraints);
 		titleField = new JTextField(25);
-		titlePanel.add(titleField, BorderLayout.CENTER);
-		textDetailPanel.add(titlePanel);
+		textDetailPanel.add(titleField, textDetailConstraintsFill);
 		
-		JPanel albumPanel = new JPanel();
 		JLabel albumLabel = new JLabel("Album:");
-		albumPanel.add(albumLabel, BorderLayout.WEST);
+		textDetailPanel.add(albumLabel, textDetailConstraints);
 		albumField = new JTextField(25);
-		albumPanel.add(albumField, BorderLayout.CENTER);
-		textDetailPanel.add(albumPanel);
+		textDetailPanel.add(albumField, textDetailConstraintsFill);
 		
-		JPanel yearPanel = new JPanel();
+		textDetailConstraints.gridy = 2;
+		textDetailConstraintsFill.gridy = 2;
+		
 		JLabel yearLabel = new JLabel("Year:");
-		yearPanel.add(yearLabel, BorderLayout.WEST);
+		textDetailPanel.add(yearLabel, textDetailConstraints);
 		yearField = new JTextField(25);
-		yearPanel.add(yearField, BorderLayout.CENTER);
-		textDetailPanel.add(yearPanel);
+		textDetailPanel.add(yearField, textDetailConstraintsFill);
 		
-		JPanel artistPanel = new JPanel();
 		JLabel artistLabel = new JLabel("Artist:");
-		artistPanel.add(artistLabel, BorderLayout.WEST);
+		textDetailPanel.add(artistLabel, textDetailConstraints);
 		artistField = new JTextField(25);
-		artistPanel.add(artistField, BorderLayout.CENTER);
-		textDetailPanel.add(artistPanel);
+		textDetailPanel.add(artistField, textDetailConstraintsFill);
 		
-		detailPanel.add(textDetailPanel, BorderLayout.CENTER);	
+		detailPanel.add(textDetailPanel, BorderLayout.NORTH);	
 		
 		getContentPane().add(detailPanel, BorderLayout.CENTER);
 	}
