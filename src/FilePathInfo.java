@@ -1,6 +1,7 @@
 import java.io.File;
 
-
+// holds the information visible in a node.
+// you can retrieve the file from a node.
 public class FilePathInfo {
 	private File file;
 	
