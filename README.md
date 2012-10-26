@@ -5,8 +5,8 @@ Language is Markdown...
 
 * Not very Model-View-Container-ish
 * Tree on the left is buggy (at least on Mac OS X)
-  * When clicking onto a node multiple times
-  * It only shows the "folder icon" if you hover over a node
+  * When clicking onto a node multiple times (should be solved)
+  * It only shows the "folder icon" if you hover over a node (solved, but could change ugly icons)
   * When clicking on a file, its ID3 stuff should be displayed on the right
   
 # Und noch ein paar Sachen auf Deutsch... ;)
