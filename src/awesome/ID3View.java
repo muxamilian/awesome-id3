@@ -26,10 +26,9 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 	private JTextField albumField;
 	private JTextField yearField;
 	private JTextField artistField;
-	private int imgPadding = 10;
 	
 	private JTree fileTree;
-	private JPanel coverContainer;
+	private ImageContainer coverContainer; //we need ImageContainer and not JPanel because we want to set the image!
 	
 	private JSplitPane splitPane;
 	
@@ -166,11 +165,9 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 		
 		detailPanel.add(textDetailPanel, BorderLayout.NORTH);
 		
-		coverContainer = new JPanel();
-		coverContainer.setBorder(new EmptyBorder(imgPadding, imgPadding, imgPadding, imgPadding));
-		ImageContainer innerCoverPanel = new ImageContainer(getDemoCoverImage());
-		coverContainer.setSize(innerCoverPanel.getWidth()+2*imgPadding, innerCoverPanel.getHeight()+2*imgPadding);
-		coverContainer.add(innerCoverPanel);
+		coverContainer = new ImageContainer(getDemoCoverImage());
+		coverContainer.setVerticalPadding(10);
+		coverContainer.setHorizontalPadding(5);
 		detailPanel.add(coverContainer, BorderLayout.CENTER);
 		
 		splitPane.setRightComponent(detailPanel);
