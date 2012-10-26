@@ -28,6 +28,7 @@ public class ID3Controller {
 		mainWindow.setVisible(true);
 	}
 	
+	// very wise! -- Max
 	public void exitApplication(){
 		System.exit(0); //TODO: should check for dirty data and save it before exiting.
 	}

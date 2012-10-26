@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class Directory implements FilePathInfo {
 	
 	private File file;
-	private List<FilePathInfo> subFiles;
+	private ArrayList<FilePathInfo> subFiles;
 	
 	public Directory(File file){
 		this.file = file;

@@ -14,6 +14,7 @@ import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 
@@ -84,7 +85,7 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 	private void createTree(){
 		// initializes the tree
 		//TODO: Initialize with correct directory
-		DefaultMutableTreeNode topNode = buildFileTree(new Directory(new File(FileSystemView.getFileSystemView().getHomeDirectory(),"Music/iTunes")));
+		DefaultMutableTreeNode topNode = buildFileTree(new Directory(new File(FileSystemView.getFileSystemView().getHomeDirectory(),"Music")));
 		//in "" you can add a subpath e.g. /Music/iTunes for mac users
 		
 		fileTree = new JTree(topNode);
@@ -105,8 +106,13 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 	private DefaultMutableTreeNode buildFileTree(FilePathInfo pathInfo) {
 		if(pathInfo.isDirectory()){
 			DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(pathInfo);
-			for(FilePathInfo fpi : pathInfo.listFiles()){
-				rootNode.add(buildFileTree(fpi));
+			ArrayList<FilePathInfo> subFiles = (ArrayList<FilePathInfo>) pathInfo.listFiles();
+			if(subFiles.size() == 0) {
+				rootNode.add(new DefaultMutableTreeNode(new DummyFile()));
+			} else {
+				for(FilePathInfo fpi : subFiles){
+					rootNode.add(buildFileTree(fpi));
+				}
 			}
 			return rootNode;
 		} else {
@@ -163,7 +169,7 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 		coverContainer = new ImageContainer(getDemoCoverImage());
 		detailPanel.add(coverContainer, BorderLayout.CENTER);
 		
-		splitPane.setRightComponent(detailPanel);		
+		splitPane.setRightComponent(detailPanel);
 		
 	}
 	
