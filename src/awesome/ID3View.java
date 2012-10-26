@@ -28,9 +28,6 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 	private ImageContainer coverContainer;
 	
 	public ID3View() {
-		
-		File homeDir = FileSystemView.getFileSystemView().getHomeDirectory();
-		
 		setSize(500, 500);
 		setTitle("Awesome ID3");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //TODO: Change to ID3Controller.exitApplication()
