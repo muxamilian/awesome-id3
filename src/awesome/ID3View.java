@@ -28,12 +28,16 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 	private JTree fileTree;
 	private ImageContainer coverContainer;
 	
+	private JSplitPane splitPane;
+	
 	public ID3View() {
-		setSize(500, 500);
+		setSize(700, 500);
 		setTitle("Awesome ID3");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //TODO: Change to ID3Controller.exitApplication()
 		
-		//TODO: Maybe we should create a split pane here so that the user can resize the tree.
+		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		splitPane.setDividerLocation(-1);
+		getContentPane().add(splitPane, BorderLayout.CENTER);
 		createTree();
 		createMenu();
 		createDetailForm();
@@ -80,7 +84,7 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 	private void createTree(){
 		// initializes the tree
 		//TODO: Initialize with correct directory
-		DefaultMutableTreeNode topNode = buildFileTree(new Directory(new File(FileSystemView.getFileSystemView().getHomeDirectory(),"")));
+		DefaultMutableTreeNode topNode = buildFileTree(new Directory(new File(FileSystemView.getFileSystemView().getHomeDirectory(),"Music/iTunes")));
 		//in "" you can add a subpath e.g. /Music/iTunes for mac users
 		
 		fileTree = new JTree(topNode);
@@ -88,14 +92,13 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 		fileTree.addTreeSelectionListener(this);
 		// packs the tree into a scroll pane.
 		JScrollPane treePane = new JScrollPane(fileTree);
-		fileTree.setPreferredSize(new Dimension(250, 1000));
-		fileTree.setMinimumSize(new Dimension(250, 1000));
+		treePane.setPreferredSize(new Dimension(200, 10));
+		treePane.setMinimumSize(new Dimension(200, 10));
 
 		treePane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		treePane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		treePane.setPreferredSize(new Dimension(150, 1));
 		
-		getContentPane().add(treePane, BorderLayout.WEST);
+		splitPane.setLeftComponent(treePane);
 	}
 	
 	
@@ -160,7 +163,7 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 		coverContainer = new ImageContainer(getDemoCoverImage());
 		detailPanel.add(coverContainer, BorderLayout.CENTER);
 		
-		getContentPane().add(detailPanel, BorderLayout.CENTER);		
+		splitPane.setRightComponent(detailPanel);		
 		
 	}
 	
