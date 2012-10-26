@@ -15,3 +15,4 @@ Language is Markdown...
   * Autom. Skalierung für große Cover.
   * MAX: minimal verbessert durch zweites Panel drumrum. Ist aber verbuggt wie alles in Swing
 * Wir können das ID3 Tag schreiben und lesen auch gleich implementieren, ich bin für ID3 v2.2 (zwar nicht ganz aktuell aber einfach zu implementieren ;) )
+Yannick: Das wird nix, die Projektbeschreibung sieht Version 2.3 vor, die aber auch nicht schwer zu implementieren ist.
