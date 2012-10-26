@@ -106,13 +106,11 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 	
 	
 	private DefaultMutableTreeNode buildFileTree(FilePathInfo pathInfo) {
-		if(pathInfo.isDirectory()){
+		if(pathInfo.isDirectory() && (MP3File.containsMP3s(pathInfo.getFile()))){
 			DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(pathInfo);
 			ArrayList<FilePathInfo> subFiles = (ArrayList<FilePathInfo>) pathInfo.listFiles();
-			if(subFiles.size() == 0) {
-				rootNode.add(new DefaultMutableTreeNode(new DummyFile()));
-			} else {
-				for(FilePathInfo fpi : subFiles){
+			for(FilePathInfo fpi : subFiles){
+				if(MP3File.containsMP3s(fpi.getFile())) {
 					rootNode.add(buildFileTree(fpi));
 				}
 			}
