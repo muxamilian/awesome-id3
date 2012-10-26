@@ -27,5 +27,7 @@ public class DummyFile implements FilePathInfo {
 	public List<FilePathInfo> listFiles() {
 		return null;
 	}
-
+	public static boolean isDummy(FilePathInfo fpi) {
+		return fpi instanceof DummyFile;
+	}
 }

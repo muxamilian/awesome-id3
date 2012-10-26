@@ -3,6 +3,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 
 public class ImageContainer extends JPanel {
@@ -18,7 +19,15 @@ public class ImageContainer extends JPanel {
 		setSize(width, height);
 	}
 	
-    @Override
+    public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	@Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(img, 0, 0, null); // see javadoc for more info on the parameters            

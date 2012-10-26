@@ -4,6 +4,7 @@ package awesome;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileSystemView;
@@ -25,9 +26,10 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 	private JTextField albumField;
 	private JTextField yearField;
 	private JTextField artistField;
+	private int imgPadding = 10;
 	
 	private JTree fileTree;
-	private ImageContainer coverContainer;
+	private JPanel coverContainer;
 	
 	private JSplitPane splitPane;
 	
@@ -166,7 +168,11 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 		
 		detailPanel.add(textDetailPanel, BorderLayout.NORTH);
 		
-		coverContainer = new ImageContainer(getDemoCoverImage());
+		coverContainer = new JPanel();
+		coverContainer.setBorder(new EmptyBorder(imgPadding, imgPadding, imgPadding, imgPadding));
+		ImageContainer innerCoverPanel = new ImageContainer(getDemoCoverImage());
+		coverContainer.setSize(innerCoverPanel.getWidth()+2*imgPadding, innerCoverPanel.getHeight()+2*imgPadding);
+		coverContainer.add(innerCoverPanel);
 		detailPanel.add(coverContainer, BorderLayout.CENTER);
 		
 		splitPane.setRightComponent(detailPanel);
