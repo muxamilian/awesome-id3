@@ -1,16 +1,31 @@
 package awesome;
-import javax.swing.*;
-import javax.swing.filechooser.FileSystemView;
-import java.awt.*;
-import java.io.File;
-import java.awt.event.*;
 
-public class ID3View extends JFrame {
+
+import javax.imageio.ImageIO;
+import javax.imageio.stream.MemoryCacheImageInputStream;
+import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.filechooser.FileSystemView;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeSelectionModel;
+
+import java.awt.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+
+public class ID3View extends JFrame implements TreeSelectionListener {
 	
 	private JTextField titleField;
 	private JTextField albumField;
 	private JTextField yearField;
 	private JTextField artistField;
+	
+	private JTree fileTree;
+	private ImageContainer coverContainer;
 	
 	public ID3View() {
 		
@@ -65,18 +80,22 @@ public class ID3View extends JFrame {
 	 */
 	
 	private void createTree(){
-		JTree tree = new JTree();
-		tree.setPreferredSize(new Dimension(150, 1000));
-		tree.setMinimumSize(new Dimension(150, 1000));
+		// initializes the tree
+		//TODO: Initialize with correct directory
+		DefaultMutableTreeNode topNode = new DefaultMutableTreeNode(new FilePathInfo(FileSystemView.getFileSystemView().getHomeDirectory()));
+		fileTree = new JTree(topNode);
+		fileTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		fileTree.addTreeSelectionListener(this);
+		// packs the tree into a scroll pane.
+		JScrollPane treePane = new JScrollPane(fileTree);
+		fileTree.setPreferredSize(new Dimension(150, 1000));
+		fileTree.setMinimumSize(new Dimension(150, 1000));
+
+		treePane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		treePane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		treePane.setPreferredSize(new Dimension(150, 1));
 		
-		JScrollPane scrollPane = new JScrollPane();		
-		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setPreferredSize(new Dimension(150, 1));
-		
-		scrollPane.add(tree);
-		
-		getContentPane().add(scrollPane, BorderLayout.WEST);
+		getContentPane().add(treePane, BorderLayout.WEST);
 	}
 	
 	
@@ -98,14 +117,14 @@ public class ID3View extends JFrame {
 						0.0, 0.0, GridBagConstraints.BASELINE_LEADING, GridBagConstraints.HORIZONTAL, new Insets(10,20,0,5), 0, 0);
 		GridBagConstraints textDetailConstraintsFill = (GridBagConstraints) textDetailConstraints.clone();
 		textDetailConstraintsFill.weightx = 0.5;
-		textDetailConstraintsFill.insets = new Insets(10,5,0,20);
+		//textDetailConstraintsFill.insets = new Insets(10,5,0,20);
 		
-		JLabel titleLabel = new JLabel("Title:");
+		JLabel titleLabel = new JLabel("<html><b>Title</b></html>");
 		textDetailPanel.add(titleLabel, textDetailConstraints);
 		titleField = new JTextField(25);
 		textDetailPanel.add(titleField, textDetailConstraintsFill);
 		
-		JLabel albumLabel = new JLabel("Album:");
+		JLabel albumLabel = new JLabel("<html><b>Album</b></html>");
 		textDetailPanel.add(albumLabel, textDetailConstraints);
 		albumField = new JTextField(25);
 		textDetailPanel.add(albumField, textDetailConstraintsFill);
@@ -113,18 +132,75 @@ public class ID3View extends JFrame {
 		textDetailConstraints.gridy = 2;
 		textDetailConstraintsFill.gridy = 2;
 		
-		JLabel yearLabel = new JLabel("Year:");
+		JLabel yearLabel = new JLabel("<html><b>Year</b></html>");
 		textDetailPanel.add(yearLabel, textDetailConstraints);
 		yearField = new JTextField(25);
 		textDetailPanel.add(yearField, textDetailConstraintsFill);
 		
-		JLabel artistLabel = new JLabel("Artist:");
+		JLabel artistLabel = new JLabel("<html><b>Artist</b></html>");
 		textDetailPanel.add(artistLabel, textDetailConstraints);
 		artistField = new JTextField(25);
 		textDetailPanel.add(artistField, textDetailConstraintsFill);
 		
-		detailPanel.add(textDetailPanel, BorderLayout.NORTH);	
+		detailPanel.add(textDetailPanel, BorderLayout.NORTH);
 		
-		getContentPane().add(detailPanel, BorderLayout.CENTER);
+		coverContainer = new ImageContainer(getDemoCoverImage());
+		detailPanel.add(coverContainer, BorderLayout.CENTER);
+		
+		getContentPane().add(detailPanel, BorderLayout.CENTER);		
+		
 	}
+	
+	// Retrieves the demo image.
+		// Java is horribly complicated. I want to add an image and
+		// it takes 30 lines of code :o
+		public static BufferedImage getDemoCoverImage()	{
+			BufferedImage bufferedImage = null;
+			byte[] byteStream = resources.TestImages.png;
+			ByteArrayInputStream myByteBuffer = new ByteArrayInputStream(byteStream);
+			MemoryCacheImageInputStream imgInputStream = new MemoryCacheImageInputStream(myByteBuffer);
+			try {
+				bufferedImage = ImageIO.read(imgInputStream);
+			} catch (IOException e) {
+				// Blablabla
+				e.printStackTrace();
+			}
+			return bufferedImage;
+		}
+
+		@Override
+		// The event handler for the tree
+		public void valueChanged(TreeSelectionEvent event) {
+			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
+			if(selectedNode != null) {
+				Object info = selectedNode.getUserObject();
+				FilePathInfo fpi = (FilePathInfo) info;
+				File file = fpi.getFile();
+				if(file.isDirectory()) {
+					// checks if the node already has children
+					if(selectedNode.getChildCount() == 0) {
+						File[] childNodes = file.listFiles();
+						DefaultMutableTreeNode[] newNodes = nodify(childNodes);
+						for(DefaultMutableTreeNode n:newNodes) {
+							selectedNode.add(n);
+						}
+					} else {
+						// if the node has children and is clicked, remove all.
+						selectedNode.removeAllChildren();
+					}
+				} else {
+					// TODO get the file's information and add it to the right.
+				}
+			}
+		}
+		
+		// makes tree nodes out of an array of files
+		public static DefaultMutableTreeNode[] nodify(File[] files) {
+			DefaultMutableTreeNode[] ret = new DefaultMutableTreeNode[files.length];
+			for(int i=0;i<files.length;i++) {
+				FilePathInfo info = new FilePathInfo(files[i]);
+				ret[i] = new DefaultMutableTreeNode(info);
+			}
+			return ret;
+		}
 }
