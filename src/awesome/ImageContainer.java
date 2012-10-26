@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 
 
 public class ImageContainer extends JPanel {
+	private static final long serialVersionUID = 6174421452105025008L;
 	private BufferedImage img;
 	private int width;
 	private int height;

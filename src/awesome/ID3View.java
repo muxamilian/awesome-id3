@@ -19,6 +19,7 @@ import java.awt.image.BufferedImage;
 
 public class ID3View extends JFrame implements TreeSelectionListener {
 	
+	private static final long serialVersionUID = 3797307884995261587L;
 	private JTextField titleField;
 	private JTextField albumField;
 	private JTextField yearField;
@@ -79,14 +80,15 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 	private void createTree(){
 		// initializes the tree
 		//TODO: Initialize with correct directory
-		DefaultMutableTreeNode topNode = new DefaultMutableTreeNode(new FilePathInfo(FileSystemView.getFileSystemView().getHomeDirectory()));
+		DefaultMutableTreeNode topNode = buildFileTree(new Directory(new File(FileSystemView.getFileSystemView().getHomeDirectory(),"/Music/iTunes")));
+		
 		fileTree = new JTree(topNode);
 		fileTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		fileTree.addTreeSelectionListener(this);
 		// packs the tree into a scroll pane.
 		JScrollPane treePane = new JScrollPane(fileTree);
-		fileTree.setPreferredSize(new Dimension(150, 1000));
-		fileTree.setMinimumSize(new Dimension(150, 1000));
+		fileTree.setPreferredSize(new Dimension(250, 1000));
+		fileTree.setMinimumSize(new Dimension(250, 1000));
 
 		treePane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		treePane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -96,6 +98,19 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 	}
 	
 	
+	private DefaultMutableTreeNode buildFileTree(FilePathInfo pathInfo) {
+		if(pathInfo.isDirectory()){
+			DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(pathInfo);
+			for(FilePathInfo fpi : pathInfo.listFiles()){
+				rootNode.add(buildFileTree(fpi));
+			}
+			return rootNode;
+		} else {
+			return new DefaultMutableTreeNode(pathInfo);
+		}
+	}
+
+
 	/**
 	 * creates and initializes the fields used to display and modify the
 	 * detailed information of a mp3 file.
@@ -168,7 +183,7 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 		@Override
 		// The event handler for the tree
 		public void valueChanged(TreeSelectionEvent event) {
-			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
+			/*DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
 			if(selectedNode != null) {
 				Object info = selectedNode.getUserObject();
 				FilePathInfo fpi = (FilePathInfo) info;
@@ -188,16 +203,16 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 				} else {
 					// TODO get the file's information and add it to the right.
 				}
-			}
+			}*/
 		}
 		
 		// makes tree nodes out of an array of files
-		public static DefaultMutableTreeNode[] nodify(File[] files) {
+		/*public static DefaultMutableTreeNode[] nodify(File[] files) {
 			DefaultMutableTreeNode[] ret = new DefaultMutableTreeNode[files.length];
 			for(int i=0;i<files.length;i++) {
 				FilePathInfo info = new FilePathInfo(files[i]);
 				ret[i] = new DefaultMutableTreeNode(info);
 			}
 			return ret;
-		}
+		}*/
 }
