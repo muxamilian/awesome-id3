@@ -23,14 +23,6 @@ public class ImageContainer extends JPanel {
 	}
 
 	/**
-	 * @see javax.swing.JComponent#getMaximumSize()
-	 */
-	@Override
-	public Dimension getMaximumSize() {
-		return new Dimension(img.getWidth(), img.getHeight());
-	}
-
-	/**
 	 * @return the verticalPadding
 	 */
 	public int getVerticalPadding() {
@@ -58,15 +50,6 @@ public class ImageContainer extends JPanel {
 		this.horizontalPadding = horizontalPadding;
 	}
 
-	/**
-	 * @see javax.swing.JComponent#getPreferredSize()
-	 */
-	@Override
-	public Dimension getPreferredSize() {
-		return getMaximumSize();
-	}
-
-
 
 	@Override
     public void paintComponent(Graphics g) {
@@ -78,8 +61,8 @@ public class ImageContainer extends JPanel {
         	scaleFactor = 1.0;
         	x = ((getWidth()-horizontalPadding*2) - img.getWidth()) / 2;
         }
-        g.drawImage(img.getScaledInstance((int)(img.getWidth()*scaleFactor), 
-        									(int)(img.getHeight()*scaleFactor), Image.SCALE_DEFAULT), horizontalPadding + x, verticalPadding, null); 
+        g.drawImage(img.getScaledInstance(Math.max((int)(img.getWidth()*scaleFactor), 1), 
+        									Math.max((int)(img.getHeight()*scaleFactor), 1), Image.SCALE_DEFAULT), horizontalPadding + x, verticalPadding, null); 
         // see javadoc for more info on the parameters            
     }
 }
