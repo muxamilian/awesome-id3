@@ -1,13 +1,21 @@
 package awesome;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
-
-import javax.swing.tree.DefaultMutableTreeNode;
 
 public class MP3File implements FilePathInfo {
 	
 	File file;
+	private String title;
+	private String artist;
+	private String album;
+	private String year;
+	private BufferedImage cover;
 	
 	public MP3File(File file){
 		this.file = file; //TODO: Parse Info?
@@ -34,7 +42,25 @@ public class MP3File implements FilePathInfo {
 	}
 
 	public static boolean isMP3(File f) {
-		return f.getName().endsWith(".mp3"); //TODO: Add better MP3 recognition here
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream(f);
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
+		byte[] isRightID3 = new byte[5];
+		try {
+			fis.read(isRightID3);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		byte[] firstThree = {isRightID3[0],isRightID3[1],isRightID3[2]};
+		byte[] nextTwo = {isRightID3[3],isRightID3[4]};
+		String identifier = new String(firstThree);
+		byte[] rightVersionNumber = {3,0};
+		return f.getName().endsWith(".mp3") &&
+				identifier.equals("ID3") && 
+				Arrays.equals(nextTwo,rightVersionNumber);
 	}
 
 	public static boolean containsMP3s(File rootFile) {
@@ -49,6 +75,9 @@ public class MP3File implements FilePathInfo {
 			}
 		}
 		return false;
+	}
+	private void parse() {
+		
 	}
 	
 }
