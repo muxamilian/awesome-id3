@@ -1,7 +1,7 @@
 This file lies in the root directory and its name is "README.md"
 Language is Markdown...
 
-Using this documentation: [http://id3.org/id3v2.3.0]
+Using this documentation: http://id3.org/id3v2.3.0
 
 # TODO
 
