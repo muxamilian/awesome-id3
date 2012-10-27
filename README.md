@@ -1,9 +1,11 @@
 This file lies in the root directory and its name is "README.md"
 Language is Markdown...
 
+Using this documentation: [http://id3.org/id3v2.3.0]
+
 # TODO
 
-* Not very Model-View-Container-ish
+* Not very Model-View-Controller-ish
   
 ## Und noch ein paar Sachen auf Deutsch... ;)
 * ich fände eine Klasse MusicLibrary sinnvoll, die eine Referenz auf den Musikordner hält (das gehört nicht in die View wie jetzt) und für XML-Caching und Suche innerhalb des Baums zuständig ist, das konkrete Objekt würde man sich vom Controller holen über ein static getMusicLibrary()
