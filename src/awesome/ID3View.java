@@ -9,6 +9,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
 import java.awt.*;
@@ -194,6 +195,7 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 		@Override
 		// The event handler for the tree
 		public void valueChanged(TreeSelectionEvent event) {
+			updateDetailForm();
 			/*DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
 			if(selectedNode != null) {
 				Object info = selectedNode.getUserObject();
@@ -215,6 +217,22 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 					// TODO get the file's information and add it to the right.
 				}
 			}*/
+		}
+
+
+		private void updateDetailForm() {
+			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
+			if(selectedNode == null)
+				return;
+			Object userObject = selectedNode.getUserObject();
+			if(userObject instanceof MP3File){
+				MP3File mp3 = (MP3File) userObject;
+				titleField.setText(mp3.getTitle());
+				albumField.setText(mp3.getAlbum());
+				yearField.setText(mp3.getYear());
+				artistField.setText(mp3.getArtist());
+				coverContainer.setImage(mp3.getCover());
+			}
 		}
 		
 		// makes tree nodes out of an array of files

@@ -11,11 +11,11 @@ import java.util.List;
 public class MP3File implements FilePathInfo {
 	
 	File file;
-	private String title;
-	private String artist;
-	private String album;
-	private String year;
-	private BufferedImage cover;
+	private String title = "TestTitle";
+	private String artist = "TestArtist";
+	private String album = "TestAlbum";
+	private String year = "TestYear";
+	private BufferedImage cover = ID3View.getDemoCoverImage();
 	
 	public MP3File(File file){
 		this.file = file; //TODO: Parse Info?
@@ -80,6 +80,76 @@ public class MP3File implements FilePathInfo {
 	}
 	private void parse() {
 		
+	}
+
+	/**
+	 * @return the title
+	 */
+	public String getTitle() {
+		return title;
+	}
+
+	/**
+	 * @param title the title to set
+	 */
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	/**
+	 * @return the artist
+	 */
+	public String getArtist() {
+		return artist;
+	}
+
+	/**
+	 * @param artist the artist to set
+	 */
+	public void setArtist(String artist) {
+		this.artist = artist;
+	}
+
+	/**
+	 * @return the album
+	 */
+	public String getAlbum() {
+		return album;
+	}
+
+	/**
+	 * @param album the album to set
+	 */
+	public void setAlbum(String album) {
+		this.album = album;
+	}
+
+	/**
+	 * @return the year
+	 */
+	public String getYear() {
+		return year;
+	}
+
+	/**
+	 * @param year the year to set
+	 */
+	public void setYear(String year) {
+		this.year = year;
+	}
+
+	/**
+	 * @return the cover
+	 */
+	public BufferedImage getCover() {
+		return cover;
+	}
+
+	/**
+	 * @param cover the cover to set
+	 */
+	public void setCover(BufferedImage cover) {
+		this.cover = cover;
 	}
 	
 }
