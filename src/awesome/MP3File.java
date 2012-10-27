@@ -42,6 +42,9 @@ public class MP3File implements FilePathInfo {
 	}
 
 	public static boolean isMP3(File f) {
+		if(!f.getName().endsWith(".mp3")){
+			return false; //we only respect files with mp3 suffix as we don't want read every file.
+		}
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(f);
@@ -58,8 +61,7 @@ public class MP3File implements FilePathInfo {
 		byte[] nextTwo = {isRightID3[3],isRightID3[4]};
 		String identifier = new String(firstThree);
 		byte[] rightVersionNumber = {3,0};
-		return f.getName().endsWith(".mp3") &&
-				identifier.equals("ID3") && 
+		return identifier.equals("ID3") && 
 				Arrays.equals(nextTwo,rightVersionNumber);
 	}
 
