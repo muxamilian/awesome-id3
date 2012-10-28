@@ -196,6 +196,7 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 		// The event handler for the tree
 		public void valueChanged(TreeSelectionEvent event) {
 			updateDetailForm();
+			splitPane.setDividerLocation((fileTree.getPreferredSize().getWidth()+10) / (float) splitPane.getSize().getWidth());
 			/*DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
 			if(selectedNode != null) {
 				Object info = selectedNode.getUserObject();
