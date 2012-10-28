@@ -20,6 +20,7 @@ public class ImageContainer extends JPanel {
 	
 	public void setImage(BufferedImage img) {
 		this.img = img;
+		this.repaint();
 	}
 
 	/**
