@@ -196,8 +196,7 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 		// The event handler for the tree
 		public void valueChanged(TreeSelectionEvent event) {
 			updateDetailForm();
-			// FIXME seems to be buggy -- Max
-//			splitPane.setDividerLocation((fileTree.getPreferredSize().getWidth()+10) / (float) splitPane.getSize().getWidth());
+			splitPane.setDividerLocation((fileTree.getPreferredSize().getWidth()+10) / (float) splitPane.getSize().getWidth());
 		}
 
 
