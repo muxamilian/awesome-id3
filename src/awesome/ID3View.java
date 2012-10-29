@@ -35,11 +35,11 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //TODO: Change to ID3Controller.exitApplication()
 		
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		splitPane.setDividerLocation(-1);
 		getContentPane().add(splitPane, BorderLayout.CENTER);
 		createTree();
 		createMenu();
 		createDetailForm();
-		//recalculatedividerLocation(); //raises an exception
 	}
 	
 	
@@ -92,9 +92,9 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		fileTree.addTreeExpansionListener(this);
 		// packs the tree into a scroll pane.
 		JScrollPane treePane = new JScrollPane(fileTree);
-		treePane.setPreferredSize(new Dimension(200, 10));
-		treePane.setMinimumSize(new Dimension(200, 10));
-
+		treePane.setPreferredSize(new Dimension(150, 10));
+		treePane.setMinimumSize(new Dimension(150, 10));
+		
 		treePane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		treePane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		
@@ -166,7 +166,9 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		coverIcon = new ImageIcon(getDemoCoverImage());
 		coverContainer = new JLabel();
 		coverContainer.setIcon(coverIcon);
-		JPanel outerCoverContainer = new JPanel(new GridLayout(1,1));
+		FlowLayout coverLayout = new FlowLayout();
+		coverLayout.setAlignment(FlowLayout.CENTER);
+		JPanel outerCoverContainer = new JPanel(coverLayout);
 		outerCoverContainer.add(coverContainer);
 		detailPanel.add(outerCoverContainer, BorderLayout.CENTER);
 		
