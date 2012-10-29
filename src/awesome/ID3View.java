@@ -1,26 +1,21 @@
 package awesome;
 
 
-import javax.imageio.ImageIO;
-import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
 import java.awt.*;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 
-public class ID3View extends JFrame implements TreeSelectionListener {
+public class ID3View extends JFrame implements TreeSelectionListener, TreeExpansionListener {
 	
 	private static final long serialVersionUID = 3797307884995261587L;
 	private JTextField titleField;
@@ -40,11 +35,11 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //TODO: Change to ID3Controller.exitApplication()
 		
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		splitPane.setDividerLocation(-1);
 		getContentPane().add(splitPane, BorderLayout.CENTER);
 		createTree();
 		createMenu();
 		createDetailForm();
+		//recalculatedividerLocation(); //raises an exception
 	}
 	
 	
@@ -94,6 +89,7 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 		fileTree = new JTree(topNode);
 		fileTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		fileTree.addTreeSelectionListener(this);
+		fileTree.addTreeExpansionListener(this);
 		// packs the tree into a scroll pane.
 		JScrollPane treePane = new JScrollPane(fileTree);
 		treePane.setPreferredSize(new Dimension(200, 10));
@@ -187,7 +183,6 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 	// The event handler for the tree
 	public void valueChanged(TreeSelectionEvent event) {
 		updateDetailForm();
-		splitPane.setDividerLocation((fileTree.getPreferredSize().getWidth()+10) / (float) splitPane.getSize().getWidth());
 	}
 
 
@@ -206,4 +201,21 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 			// mp3.getfile.getAbsolutePath
 		}
 	}
+
+
+	@Override
+	public void treeExpanded(TreeExpansionEvent event) {
+		recalculateDividerLocation();
+	}
+	
+	@Override
+	public void treeCollapsed(TreeExpansionEvent event) {
+		recalculateDividerLocation();		
+	}
+
+	private void recalculateDividerLocation() {
+		//+25 is for scrollbar
+		splitPane.setDividerLocation((fileTree.getPreferredSize().getWidth()+25) / (float) splitPane.getSize().getWidth());
+	}
+	
 }
