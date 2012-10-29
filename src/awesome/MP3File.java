@@ -16,14 +16,17 @@ import javax.imageio.stream.MemoryCacheImageInputStream;
 public class MP3File implements FilePathInfo {
 	
 	File file;
-	private String title = "TestTitle";
-	private String artist = "TestArtist";
-	private String album = "TestAlbum";
-	private String year = "TestYear";
-	private BufferedImage cover = ID3View.getDemoCoverImage();
+	private String title = null;
+	private String artist = null;
+	private String album = null;
+	private String year = null;
+	private BufferedImage cover = null;
 	
 	public MP3File(File file){
 		this.file = file; 
+	}
+	
+	public void tryToParse() {
 		try {
 			parse();//TODO: Better Parse Info Policy?
 		} catch (IOException e) {
@@ -151,6 +154,9 @@ public class MP3File implements FilePathInfo {
 	 * @return the title
 	 */
 	public String getTitle() {
+		if(title == null) {
+			tryToParse();
+		}
 		return title;
 	}
 
@@ -165,6 +171,9 @@ public class MP3File implements FilePathInfo {
 	 * @return the artist
 	 */
 	public String getArtist() {
+		if(artist == null) {
+			tryToParse();
+		}
 		return artist;
 	}
 
@@ -179,6 +188,9 @@ public class MP3File implements FilePathInfo {
 	 * @return the album
 	 */
 	public String getAlbum() {
+		if(album == null) {
+			tryToParse();
+		}
 		return album;
 	}
 
@@ -193,6 +205,9 @@ public class MP3File implements FilePathInfo {
 	 * @return the year
 	 */
 	public String getYear() {
+		if(year == null) {
+			tryToParse();
+		}
 		return year;
 	}
 
@@ -207,6 +222,9 @@ public class MP3File implements FilePathInfo {
 	 * @return the cover
 	 */
 	public BufferedImage getCover() {
+		if(cover == null) {
+			tryToParse();
+		}
 		return cover;
 	}
 
