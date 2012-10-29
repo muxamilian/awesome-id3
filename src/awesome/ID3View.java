@@ -198,6 +198,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 			yearField.setText(mp3.getYear());
 			artistField.setText(mp3.getArtist());
 			coverIcon = new ImageIcon(mp3.getCover());
+			coverContainer.setIcon(coverIcon);
 			// mp3.getfile.getAbsolutePath
 		}
 	}
