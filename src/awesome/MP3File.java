@@ -22,7 +22,7 @@ public class MP3File implements FilePathInfo {
 	private String year = null;
 	// TODO in productive version here should be null instead of 
 	// ID3View.getDemoCoverImage() in order that the lazy parsing works
-	private BufferedImage cover = ID3View.getDemoCoverImage();
+	private byte[] cover = ID3View.getDemoCoverImage();
 	
 	public MP3File(File file){
 		this.file = file; 
@@ -147,9 +147,7 @@ public class MP3File implements FilePathInfo {
 		byte buff[] = new byte[fsize-1-mime.length()-1-1-desc.length()-1];
 		input.read(buff);
 		input.readPadding();
-		ByteArrayInputStream myByteBuffer = new ByteArrayInputStream(buff);
-		MemoryCacheImageInputStream imgInputStream = new MemoryCacheImageInputStream(myByteBuffer);
-		cover = ImageIO.read(imgInputStream);
+		cover = buff;
 	}
 
 	/**
@@ -223,7 +221,7 @@ public class MP3File implements FilePathInfo {
 	/**
 	 * @return the cover
 	 */
-	public BufferedImage getCover() {
+	public byte[] getCover() {
 		if(cover == null) {
 			tryToParse();
 		}
@@ -233,7 +231,7 @@ public class MP3File implements FilePathInfo {
 	/**
 	 * @param cover the cover to set
 	 */
-	public void setCover(BufferedImage cover) {
+	public void setCover(byte[] cover) {
 		this.cover = cover;
 	}
 	

@@ -27,9 +27,10 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 	private JTextField albumField;
 	private JTextField yearField;
 	private JTextField artistField;
-	
+
 	private JTree fileTree;
-	private ImageContainer coverContainer; //we need ImageContainer and not JPanel because we want to set the image!
+	private ImageIcon coverIcon; //we need ImageContainer and not JPanel because we want to set the image!
+	private JLabel coverContainer;
 	
 	private JSplitPane splitPane;
 	
@@ -166,63 +167,43 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 		
 		detailPanel.add(textDetailPanel, BorderLayout.NORTH);
 		
-		coverContainer = new ImageContainer(getDemoCoverImage());
-		coverContainer.setVerticalPadding(10);
-		coverContainer.setHorizontalPadding(5);
-		detailPanel.add(coverContainer, BorderLayout.CENTER);
+		coverIcon = new ImageIcon(getDemoCoverImage());
+		coverContainer = new JLabel();
+		coverContainer.setIcon(coverIcon);
+		JPanel outerCoverContainer = new JPanel(new GridLayout(1,1));
+		outerCoverContainer.add(coverContainer);
+		detailPanel.add(outerCoverContainer, BorderLayout.CENTER);
 		
 		splitPane.setRightComponent(detailPanel);
 		
 	}
 	
-	// Retrieves the demo image.
-		// Java is horribly complicated. I want to add an image and
-		// it takes 30 lines of code :o
-		public static BufferedImage getDemoCoverImage()	{
-			BufferedImage bufferedImage = null;
-			byte[] byteStream = resources.TestImages.png;
-			ByteArrayInputStream myByteBuffer = new ByteArrayInputStream(byteStream);
-			MemoryCacheImageInputStream imgInputStream = new MemoryCacheImageInputStream(myByteBuffer);
-			try {
-				bufferedImage = ImageIO.read(imgInputStream);
-			} catch (IOException e) {
-				// Blablabla
-				e.printStackTrace();
-			}
-			return bufferedImage;
-		}
+	public static byte[] getDemoCoverImage()	{
+		byte[] byteStream = resources.TestImages.png;
+		return byteStream;
+	}
 
-		@Override
-		// The event handler for the tree
-		public void valueChanged(TreeSelectionEvent event) {
-			updateDetailForm();
-			splitPane.setDividerLocation((fileTree.getPreferredSize().getWidth()+10) / (float) splitPane.getSize().getWidth());
-		}
+	@Override
+	// The event handler for the tree
+	public void valueChanged(TreeSelectionEvent event) {
+		updateDetailForm();
+		splitPane.setDividerLocation((fileTree.getPreferredSize().getWidth()+10) / (float) splitPane.getSize().getWidth());
+	}
 
 
-		private void updateDetailForm() {
-			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
-			if(selectedNode == null)
-				return;
-			Object userObject = selectedNode.getUserObject();
-			if(userObject instanceof MP3File){
-				MP3File mp3 = (MP3File) userObject;
-				titleField.setText(mp3.getTitle());
-				albumField.setText(mp3.getAlbum());
-				yearField.setText(mp3.getYear());
-				artistField.setText(mp3.getArtist());
-				coverContainer.setImage(mp3.getCover());
-				// mp3.getfile.getAbsolutePath
-			}
+	private void updateDetailForm() {
+		DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
+		if(selectedNode == null)
+			return;
+		Object userObject = selectedNode.getUserObject();
+		if(userObject instanceof MP3File){
+			MP3File mp3 = (MP3File) userObject;
+			titleField.setText(mp3.getTitle());
+			albumField.setText(mp3.getAlbum());
+			yearField.setText(mp3.getYear());
+			artistField.setText(mp3.getArtist());
+			coverIcon = new ImageIcon(mp3.getCover());
+			// mp3.getfile.getAbsolutePath
 		}
-		
-		// makes tree nodes out of an array of files
-		/*public static DefaultMutableTreeNode[] nodify(File[] files) {
-			DefaultMutableTreeNode[] ret = new DefaultMutableTreeNode[files.length];
-			for(int i=0;i<files.length;i++) {
-				FilePathInfo info = new FilePathInfo(files[i]);
-				ret[i] = new DefaultMutableTreeNode(info);
-			}
-			return ret;
-		}*/
+	}
 }
