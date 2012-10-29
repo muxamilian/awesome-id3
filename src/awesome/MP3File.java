@@ -20,7 +20,9 @@ public class MP3File implements FilePathInfo {
 	private String artist = null;
 	private String album = null;
 	private String year = null;
-	private BufferedImage cover = null;
+	// TODO in productive version here should be null instead of 
+	// ID3View.getDemoCoverImage() in order that the lazy parsing works
+	private BufferedImage cover = ID3View.getDemoCoverImage();
 	
 	public MP3File(File file){
 		this.file = file; 

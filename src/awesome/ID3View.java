@@ -196,28 +196,8 @@ public class ID3View extends JFrame implements TreeSelectionListener {
 		// The event handler for the tree
 		public void valueChanged(TreeSelectionEvent event) {
 			updateDetailForm();
-			splitPane.setDividerLocation((fileTree.getPreferredSize().getWidth()+10) / (float) splitPane.getSize().getWidth());
-			/*DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
-			if(selectedNode != null) {
-				Object info = selectedNode.getUserObject();
-				FilePathInfo fpi = (FilePathInfo) info;
-				File file = fpi.getFile();
-				if(file.isDirectory()) {
-					// checks if the node already has children
-					if(selectedNode.getChildCount() == 0) {
-						File[] childNodes = file.listFiles();
-						DefaultMutableTreeNode[] newNodes = nodify(childNodes);
-						for(DefaultMutableTreeNode n:newNodes) {
-							selectedNode.add(n);
-						}
-					} else {
-						// if the node has children and is clicked, remove all.
-						selectedNode.removeAllChildren();
-					}
-				} else {
-					// TODO get the file's information and add it to the right.
-				}
-			}*/
+			// FIXME seems to be buggy -- Max
+//			splitPane.setDividerLocation((fileTree.getPreferredSize().getWidth()+10) / (float) splitPane.getSize().getWidth());
 		}
 
 
