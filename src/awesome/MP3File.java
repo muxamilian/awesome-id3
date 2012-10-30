@@ -162,18 +162,21 @@ public class MP3File implements FilePathInfo {
 	
 	public void save() throws IOException{
 		if(!dirty) return; //if nothing changed, we don't need to save anything
-		//TODO: implement music reading and writing of whole file 
+		
+		// read music data
 		byte musicData[] = readMusicData(tagSize);
-		
+		// delete the file so that it can recreated
 		file.delete();
-		
+		//we always use ISO-8859-1 as it is the ID3 standard encoding
 		Charset cs = Charset.forName("ISO-8859-1");
 		
+		//convert strings to byte arrays so that the length can be determined
 		byte[] titleData = title.getBytes(cs);
 		byte[] albumData = album.getBytes(cs);
 		byte[] artistData = artist.getBytes(cs);
 		byte[] yearData = year.getBytes(cs);
 		
+		// compute size of ID3-Tag excluding the 10 header bytes
 		int newTagSize = 0;
 		for(ID3Frame frame : unknownFrames){
 			newTagSize += frame.getSize() + 10;
@@ -181,23 +184,28 @@ public class MP3File implements FilePathInfo {
 		newTagSize += 40 + titleData.length + albumData.length + artistData.length + yearData.length;
 		newTagSize += 10 + 3 + cover.length + coverMime.getBytes(cs).length;
 		
+		// create outputstream
 		DataOutputStream dos = new DataOutputStream(new FileOutputStream(file));
+		//write magic bytes and size of tag
 		dos.write(new byte[]{0x49, 0x44, 0x33, 0x03, 0x00}); //write Header start
 		dos.writeByte(headerFlags);
 		dos.write(convertToSynchSafe(newTagSize));
 		
+		// write the four elemental text frames and the cover
 		writeTextFrame(dos, "TPE1", artistData);
 		writeTextFrame(dos, "TALB", albumData);
 		writeTextFrame(dos, "TIT2", titleData);
 		writeTextFrame(dos, "TYER", yearData);
 		writeCover(dos);
 		
+		// write all the unkown frames not modified by our software
 		for(ID3Frame frame : unknownFrames){
 			frame.writeToStream(dos);
 		}
 		
+		//tag ist finished, we can write the music data
 		dos.write(musicData);
-		
+		// and close
 		dos.close();
 	}
 
@@ -213,11 +221,11 @@ public class MP3File implements FilePathInfo {
 	}
 
 	private void writeTextFrame(DataOutputStream dos, String id, byte[] titleData) throws UnsupportedEncodingException, IOException {
-		dos.write(id.getBytes("ASCII"));
-		dos.writeInt(titleData.length+1);
-		dos.writeShort(0);
-		dos.writeByte(0);
-		dos.write(titleData);
+		dos.write(id.getBytes("ASCII")); //write frame identifier
+		dos.writeInt(titleData.length+1); //write size of frame
+		dos.writeShort(0); //flags
+		dos.writeByte(0); //charset = ISO-8859-1
+		dos.write(titleData); //write text data
 	}
 
 	private byte[] convertToSynchSafe(int newTagSize) {
