@@ -1,10 +1,13 @@
 package awesome;
 
 import java.io.ByteArrayInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +21,9 @@ public class MP3File implements FilePathInfo {
 	private String album = null;
 	private String year = null;
 	private boolean dirty = false; //indicates whether an attribute has changed
+	private int tagSize = -1;
+	private int headerFlags = 0;
+	private String coverMime = "image/png";
 	// TODO in productive version here should be null instead of 
 	// ID3View.getDemoCoverImage() in order that the lazy parsing works
 	private byte[] cover = ID3View.getDemoCoverImage();
@@ -108,10 +114,11 @@ public class MP3File implements FilePathInfo {
 			return; //maybe we should throw an exception here as MP3File already checked for header.
 		}
 		
-		int flags = input.readUnsignedByte();
-		int size = input.readSyncSafeSize();
+		headerFlags = input.readUnsignedByte();
+		//TODO: Don't touch files which have flags set
+		tagSize = input.readSyncSafeSize();
 		//Extended Header
-		byte[] tag = new byte[size];
+		byte[] tag = new byte[tagSize];
 		input.read(tag);
 		input.close();
 		input = new ID3InputStream(new ByteArrayInputStream(tag));
@@ -142,20 +149,93 @@ public class MP3File implements FilePathInfo {
 	
 	private void parsePic(ID3InputStream input, int fsize) throws FileNotFoundException, IOException {
 		Charset cs = input.readCharset();
-		String mime = input.readStringUntilZero(cs);
+		coverMime = input.readStringUntilZero(cs);
 		int picType = input.readUnsignedByte();
 		if(picType != 0x03) 
 			return;
 		String desc = input.readStringUntilZero(cs);
-		byte buff[] = new byte[fsize-1-mime.length()-1-1-desc.length()-1];
+		byte buff[] = new byte[fsize-1-coverMime.length()-1-1-desc.length()-1];
 		input.read(buff);
 		input.readPadding();
 		cover = buff;
 	}
 	
-	public void save(){
+	public void save() throws IOException{
 		if(!dirty) return; //if nothing changed, we don't need to save anything
 		//TODO: implement music reading and writing of whole file 
+		byte musicData[] = readMusicData(tagSize);
+		
+		file.delete();
+		
+		Charset cs = Charset.forName("ISO-8859-1");
+		
+		byte[] titleData = title.getBytes(cs);
+		byte[] albumData = album.getBytes(cs);
+		byte[] artistData = artist.getBytes(cs);
+		byte[] yearData = year.getBytes(cs);
+		
+		int newTagSize = 0;
+		for(ID3Frame frame : unknownFrames){
+			newTagSize += frame.getSize() + 10;
+		}
+		newTagSize += 40 + titleData.length + albumData.length + artistData.length + yearData.length;
+		newTagSize += 10 + 3 + cover.length + coverMime.getBytes(cs).length;
+		
+		DataOutputStream dos = new DataOutputStream(new FileOutputStream(file));
+		dos.write(new byte[]{0x49, 0x44, 0x33, 0x03, 0x00}); //write Header start
+		dos.writeByte(headerFlags);
+		dos.write(convertToSynchSafe(newTagSize));
+		
+		writeTextFrame(dos, "TPE1", artistData);
+		writeTextFrame(dos, "TALB", albumData);
+		writeTextFrame(dos, "TIT2", titleData);
+		writeTextFrame(dos, "TYER", yearData);
+		writeCover(dos);
+		
+		for(ID3Frame frame : unknownFrames){
+			frame.writeToStream(dos);
+		}
+		
+		dos.write(musicData);
+		
+		dos.close();
+	}
+
+	private void writeCover(DataOutputStream dos) throws UnsupportedEncodingException, IOException {
+		dos.write("APIC".getBytes("ASCII"));
+		dos.writeInt(cover.length+4+coverMime.getBytes("ISO-8859-1").length); // write size of frame
+		dos.writeByte(0); //flag byte 1
+		dos.writeByte(0); //flag byte 2
+		dos.writeByte(0); //charset
+		dos.write(coverMime.getBytes("ISO-8859-1")); //mime type, e.g. image/jpeg
+		dos.write(new byte[]{0,3,0}); // null-terminated string, 3 = cover, 0 = description (null-terminated)
+		dos.write(cover); // write image data
+	}
+
+	private void writeTextFrame(DataOutputStream dos, String id, byte[] titleData) throws UnsupportedEncodingException, IOException {
+		dos.write(id.getBytes("ASCII"));
+		dos.writeInt(titleData.length+1);
+		dos.writeShort(0);
+		dos.writeByte(0);
+		dos.write(titleData);
+	}
+
+	private byte[] convertToSynchSafe(int newTagSize) {
+		byte[] ret = new byte[4];
+		for(int i = 3; i >= 0; i--){
+			ret[3-i] = (byte) ((newTagSize & (0x7F << i*7)) >> (i*7));
+		}
+		return ret;
+	}
+
+	private byte[] readMusicData(int tagSize) throws FileNotFoundException,
+			IOException {
+		byte musicData[] = new byte[(int)file.length()-(tagSize+10)];
+		FileInputStream fis = new FileInputStream(file);
+		fis.skip(tagSize+10);
+		fis.read(musicData);
+		fis.close();
+		return musicData;
 	}
 
 	/**

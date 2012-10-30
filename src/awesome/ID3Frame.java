@@ -1,5 +1,9 @@
 package awesome;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
 public class ID3Frame {
 	
 	private String id;
@@ -40,6 +44,13 @@ public class ID3Frame {
 	 */
 	public byte[] getData() {
 		return data;
+	}
+
+	public void writeToStream(DataOutputStream dos) throws UnsupportedEncodingException, IOException {
+		dos.write(id.getBytes("ASCII"));
+		dos.writeInt(size);
+		dos.writeShort(flags);
+		dos.write(data);
 	}
 
 }

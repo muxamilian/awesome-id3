@@ -12,6 +12,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.awt.event.*;
 
@@ -52,6 +53,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		
 		JMenu menuMain = new JMenu("Awesome ID3");
 		
+		JMenuItem itemSave = new JMenuItem("Save Changes");
 		JMenuItem itemReload = new JMenuItem("Reload MP3 Files");
 		JMenuItem itemChangeDir = new JMenuItem("Choose Music Directory...");
 		JMenuItem itemExit = new JMenuItem("Exit Awesome ID3");
@@ -65,6 +67,33 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 			
 		});
 		
+		itemSave.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
+				if(selectedNode == null)
+					return;
+				Object userObject = selectedNode.getUserObject();
+				if(userObject instanceof MP3File){
+					MP3File mp3 = (MP3File) userObject;
+					mp3.setAlbum(albumField.getText());
+					mp3.setArtist(artistField.getText());
+					mp3.setTitle(titleField.getText());
+					mp3.setYear(yearField.getText());
+					try {
+						mp3.save();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			
+		});
+		
+		menuMain.add(itemSave);
+		menuMain.addSeparator();
 		menuMain.add(itemReload);
 		//menuMain.addSeparator(); //maybe it's prettier
 		menuMain.add(itemChangeDir);
