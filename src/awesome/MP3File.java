@@ -1,17 +1,14 @@
 package awesome;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.imageio.ImageIO;
-import javax.imageio.stream.MemoryCacheImageInputStream;
 
 public class MP3File implements FilePathInfo {
 	
@@ -20,12 +17,16 @@ public class MP3File implements FilePathInfo {
 	private String artist = null;
 	private String album = null;
 	private String year = null;
+	private boolean dirty = false; //indicates whether an attribute has changed
 	// TODO in productive version here should be null instead of 
 	// ID3View.getDemoCoverImage() in order that the lazy parsing works
 	private byte[] cover = ID3View.getDemoCoverImage();
 	
+	private List<ID3Frame> unknownFrames;
+	
 	public MP3File(File file){
 		this.file = file; 
+		this.unknownFrames = new ArrayList<ID3Frame>();
 	}
 	
 	public void tryToParse() {
@@ -133,7 +134,9 @@ public class MP3File implements FilePathInfo {
 			case "TPE1" : setArtist(input.readStringOfLengthWithCharsetByte(fsize)); break; //check whether TPE2 is correct
 			case "TYER" : setYear(input.readStringOfLengthWithCharsetByte(fsize)); break;
 			case "APIC" : parsePic(input, fsize); break;
-			default: byte[] buff2  = new byte[fsize]; input.read(buff2); break; //TODO: store these unknown tags for rewrite
+			default: byte[] buff2  = new byte[fsize]; input.read(buff2); 
+			unknownFrames.add(new ID3Frame(frameType, fsize, flags, buff2));
+			break;
 		}
 	}
 	
@@ -148,6 +151,11 @@ public class MP3File implements FilePathInfo {
 		input.read(buff);
 		input.readPadding();
 		cover = buff;
+	}
+	
+	public void save(){
+		if(!dirty) return; //if nothing changed, we don't need to save anything
+		//TODO: implement music reading and writing of whole file 
 	}
 
 	/**
@@ -165,6 +173,7 @@ public class MP3File implements FilePathInfo {
 	 */
 	public void setTitle(String title) {
 		this.title = title;
+		dirty = true;
 	}
 
 	/**
@@ -182,6 +191,7 @@ public class MP3File implements FilePathInfo {
 	 */
 	public void setArtist(String artist) {
 		this.artist = artist;
+		dirty = true;
 	}
 
 	/**
@@ -199,6 +209,7 @@ public class MP3File implements FilePathInfo {
 	 */
 	public void setAlbum(String album) {
 		this.album = album;
+		dirty = true;
 	}
 
 	/**
@@ -216,6 +227,7 @@ public class MP3File implements FilePathInfo {
 	 */
 	public void setYear(String year) {
 		this.year = year;
+		dirty = true;
 	}
 
 	/**
@@ -233,6 +245,7 @@ public class MP3File implements FilePathInfo {
 	 */
 	public void setCover(byte[] cover) {
 		this.cover = cover;
+		dirty = true;
 	}
 	
 }
