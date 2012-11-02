@@ -39,8 +39,7 @@ public class MP3File implements FilePathInfo {
 		try {
 			parse();//TODO: Better Parse Info Policy?
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			ID3Controller.getController().getView().presentException(e);
 		} 
 	}
 	
@@ -74,8 +73,8 @@ public class MP3File implements FilePathInfo {
 			fis = new FileInputStream(f);			
 			fis.read(isRightID3);
 			fis.close();
-		} catch ( IOException e1) {
-			e1.printStackTrace(); //TODO: Present Exception to user
+		} catch ( IOException e) {
+			ID3Controller.getController().getView().presentException(e);
 		}
 		byte[] firstThree = {isRightID3[0],isRightID3[1],isRightID3[2]};
 		byte[] nextTwo = {isRightID3[3],isRightID3[4]};
@@ -345,8 +344,7 @@ public class MP3File implements FilePathInfo {
 			coverMime = file.getName().endsWith(".png") ? "image/png" : "image/jpeg";
 			in.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			ID3Controller.getController().getView().presentException(e);
 		}
 	}
 	

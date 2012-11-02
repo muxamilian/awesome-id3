@@ -4,6 +4,7 @@ public class ID3Controller {
 	//Singleton pattern variable
 	private static ID3Controller controller;
 	
+	private ID3View view;
 	/**
 	 * @param args
 	 */
@@ -24,12 +25,16 @@ public class ID3Controller {
 	public ID3Controller() {
 		// TODO: fileChooser in it's own window, 
 		// then a window to edit something shows up.
-		ID3View mainWindow = new ID3View();
-		mainWindow.setVisible(true);
+		view = new ID3View();
+		view.setVisible(true);
 	}
 	
 	// very wise! -- Max
 	public void exitApplication(){
 		System.exit(0); //TODO: should check for dirty data and save it before exiting.
+	}
+	
+	public ID3View getView(){
+		return view;
 	}
 }

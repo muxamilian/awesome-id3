@@ -83,8 +83,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 					try {
 						mp3.save();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						presentException(e);
 					}
 				}
 			}
@@ -231,9 +230,11 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		
 	}
 	
-	public static byte[] getDemoCoverImage()	{
-		byte[] byteStream = resources.TestImages.png;
-		return byteStream;
+	public void presentException(Exception ex){
+		JOptionPane.showMessageDialog(null,
+				ex.getMessage(), 
+				"An Error Occured",                                      
+                JOptionPane.ERROR_MESSAGE);
 	}
 
 	@Override
