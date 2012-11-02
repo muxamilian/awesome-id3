@@ -231,7 +231,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 	}
 	
 	public void presentException(Exception ex){
-		JOptionPane.showMessageDialog(null,
+		JOptionPane.showMessageDialog(this,
 				ex.getMessage(), 
 				"An Error Occured",                                      
                 JOptionPane.ERROR_MESSAGE);
