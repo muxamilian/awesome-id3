@@ -69,16 +69,13 @@ public class MP3File implements FilePathInfo {
 			return false; //we only respect files with mp3 suffix as we don't want read every file.
 		}
 		FileInputStream fis = null;
-		try {
-			fis = new FileInputStream(f);
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace(); //TODO: Present Exception to user
-		}
 		byte[] isRightID3 = new byte[5];
 		try {
+			fis = new FileInputStream(f);			
 			fis.read(isRightID3);
-		} catch (IOException e) {
-			e.printStackTrace();
+			fis.close();
+		} catch ( IOException e1) {
+			e1.printStackTrace(); //TODO: Present Exception to user
 		}
 		byte[] firstThree = {isRightID3[0],isRightID3[1],isRightID3[2]};
 		byte[] nextTwo = {isRightID3[3],isRightID3[4]};
