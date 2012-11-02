@@ -76,14 +76,12 @@ public class MP3File implements FilePathInfo {
 		} catch ( IOException e) {
 			ID3Controller.getController().getView().presentException(e);
 		}
-		byte[] firstThree = {isRightID3[0],isRightID3[1],isRightID3[2]};
-		byte[] nextTwo = {isRightID3[3],isRightID3[4]};
-		String identifier = new String(firstThree);
-		byte[] rightVersionNumber = {3,0};
-		return identifier.equals("ID3") && 
-				Arrays.equals(nextTwo,rightVersionNumber);
+		byte[] rightBytes = {0x49,0x44,0x33,0x03,0x00};
+		return Arrays.equals(isRightID3,rightBytes);
 	}
-
+	
+	
+	//TODO: Move method to another class as it is not related to MP3File itself
 	public static boolean containsMP3s(File rootFile) {
 		if(rootFile.isFile()) {
 			return MP3File.isMP3(rootFile);
@@ -106,7 +104,7 @@ public class MP3File implements FilePathInfo {
 		id |= input.readUnsignedByte();
 		int version = input.readUnsignedShort();
 		if(id != 0x00494433 || version != 0x0300){
-			System.out.println("Unable to find ID3v2.3 Header!");
+			System.err.println("Unable to find ID3v2.3 Header!");
 			return; //maybe we should throw an exception here as MP3File already checked for header.
 		}
 		
@@ -341,6 +339,7 @@ public class MP3File implements FilePathInfo {
 			byte buff[] = new byte[(int) file.length()];
 			in.read(buff);
 			cover = buff;
+			dirty = true;
 			coverMime = file.getName().endsWith(".png") ? "image/png" : "image/jpeg";
 			in.close();
 		} catch (IOException e) {
