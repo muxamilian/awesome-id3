@@ -194,7 +194,34 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		
 		coverIcon = new ImageIcon(getDemoCoverImage());
 		coverContainer = new JLabel();
-		coverContainer.setIcon(coverIcon);
+		coverContainer.setIcon(coverIcon);		
+		coverContainer.addMouseListener(new MouseAdapter(){
+
+			/**
+			 * @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent)
+			 */
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(e.getButton() == MouseEvent.BUTTON1){
+					DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
+					if(selectedNode == null)
+						return;
+					Object userObject = selectedNode.getUserObject();
+					if(userObject instanceof MP3File){
+						MP3File mp3 = (MP3File) userObject;
+						JFileChooser fileChooser = new JFileChooser();
+						fileChooser.setFileFilter(new ImageFileFilter());
+						if(fileChooser.showOpenDialog(ID3View.this) == JFileChooser.APPROVE_OPTION){
+							File file = fileChooser.getSelectedFile();
+							mp3.readCoverFromFile(file);
+							coverContainer.setIcon(new ImageIcon(mp3.getCover()));
+						}
+					}
+				}
+			}
+			
+		});
+		
 		FlowLayout coverLayout = new FlowLayout();
 		coverLayout.setAlignment(FlowLayout.CENTER);
 		JPanel outerCoverContainer = new JPanel(coverLayout);

@@ -1,5 +1,6 @@
 package awesome;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -7,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -23,10 +25,8 @@ public class MP3File implements FilePathInfo {
 	private boolean dirty = false; //indicates whether an attribute has changed
 	private int tagSize = -1;
 	private int headerFlags = 0;
-	private String coverMime = "image/png";
-	// TODO in productive version here should be null instead of 
-	// ID3View.getDemoCoverImage() in order that the lazy parsing works
-	private byte[] cover = ID3View.getDemoCoverImage();
+	private String coverMime = "";
+	private byte[] cover = null;
 	
 	private List<ID3Frame> unknownFrames;
 	
@@ -129,7 +129,7 @@ public class MP3File implements FilePathInfo {
 		input.close();
 	}
 
-	private void parseFrame(awesome.ID3InputStream input) throws IOException {
+	private void parseFrame(ID3InputStream input) throws IOException {
 		String frameType = input.readStringOfLength(4);
 		//System.out.println("Frame Type: " + frameType);
 		int fsize = input.readInt();
@@ -182,7 +182,8 @@ public class MP3File implements FilePathInfo {
 			newTagSize += frame.getSize() + 10;
 		}
 		newTagSize += 40 + titleData.length + albumData.length + artistData.length + yearData.length;
-		newTagSize += 10 + 3 + cover.length + coverMime.getBytes(cs).length;
+		if(cover != null)
+			newTagSize += 10 + 3 + cover.length + coverMime.getBytes(cs).length;
 		
 		// create outputstream
 		DataOutputStream dos = new DataOutputStream(new FileOutputStream(file));
@@ -196,7 +197,8 @@ public class MP3File implements FilePathInfo {
 		writeTextFrame(dos, "TALB", albumData);
 		writeTextFrame(dos, "TIT2", titleData);
 		writeTextFrame(dos, "TYER", yearData);
-		writeCover(dos);
+		if(cover != null)
+			writeCover(dos);
 		
 		// write all the unkown frames not modified by our software
 		for(ID3Frame frame : unknownFrames){
@@ -334,6 +336,21 @@ public class MP3File implements FilePathInfo {
 	public void setCover(byte[] cover) {
 		this.cover = cover;
 		dirty = true;
+	}
+
+	public void readCoverFromFile(File file) {
+		//TODO: Add conversion for other image formats like BMP, TIFF, etc
+		try {
+			InputStream in = new BufferedInputStream(new FileInputStream(file));
+			byte buff[] = new byte[(int) file.length()];
+			in.read(buff);
+			cover = buff;
+			coverMime = file.getName().endsWith(".png") ? "image/png" : "image/jpeg";
+			in.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 }
