@@ -30,6 +30,8 @@ public class MP3File implements FilePathInfo {
 	
 	private List<ID3Frame> unknownFrames;
 	
+	private static final byte[] ID3_HEADER_START = {0x49,0x44,0x33,0x03,0x00};
+	
 	public MP3File(File file){
 		this.file = file; 
 		this.unknownFrames = new ArrayList<ID3Frame>();
@@ -76,7 +78,7 @@ public class MP3File implements FilePathInfo {
 		} catch ( IOException e) {
 			ID3Controller.getController().getView().presentException(e);
 		}
-		byte[] rightBytes = {0x49,0x44,0x33,0x03,0x00};
+		byte[] rightBytes = ID3_HEADER_START;
 		return Arrays.equals(isRightID3,rightBytes);
 	}
 	
@@ -100,12 +102,11 @@ public class MP3File implements FilePathInfo {
 	private void parse() throws IOException {
 		ID3InputStream input = new ID3InputStream(new FileInputStream(file));
 		
-		int id = input.readUnsignedShort() << 8;
-		id |= input.readUnsignedByte();
-		int version = input.readUnsignedShort();
-		if(id != 0x00494433 || version != 0x0300){
+		byte[] hstart = new byte[5];
+		input.read(hstart);
+		if(!Arrays.equals(hstart, ID3_HEADER_START)){
 			System.err.println("Unable to find ID3v2.3 Header!");
-			return; //maybe we should throw an exception here as MP3File already checked for header.
+			return; //TODO: maybe we should throw an exception here as MP3File already checked for header.
 		}
 		
 		headerFlags = input.readUnsignedByte();
@@ -180,56 +181,29 @@ public class MP3File implements FilePathInfo {
 			newTagSize += 10 + 3 + cover.length + coverMime.getBytes(cs).length;
 		
 		// create outputstream
-		DataOutputStream dos = new DataOutputStream(new FileOutputStream(file));
+		ID3OutputStream dos = new ID3OutputStream(new FileOutputStream(file));
 		//write magic bytes and size of tag
-		dos.write(new byte[]{0x49, 0x44, 0x33, 0x03, 0x00}); //write Header start
+		dos.write(ID3_HEADER_START); //write Header start
 		dos.writeByte(headerFlags);
-		dos.write(convertToSynchSafe(newTagSize));
+		dos.writeAsSynchSafe(newTagSize);
 		
 		// write the four elemental text frames and the cover
-		writeTextFrame(dos, "TPE1", artistData);
-		writeTextFrame(dos, "TALB", albumData);
-		writeTextFrame(dos, "TIT2", titleData);
-		writeTextFrame(dos, "TYER", yearData);
+		dos.writeTextFrame("TPE1", artistData);
+		dos.writeTextFrame("TALB", albumData);
+		dos.writeTextFrame("TIT2", titleData);
+		dos.writeTextFrame("TYER", yearData);
 		if(cover != null)
-			writeCover(dos);
+			dos.writeCover(cover, coverMime);
 		
 		// write all the unkown frames not modified by our software
 		for(ID3Frame frame : unknownFrames){
-			frame.writeToStream(dos);
+			dos.writeFrame(frame);
 		}
 		
 		//tag ist finished, we can write the music data
 		dos.write(musicData);
 		// and close
 		dos.close();
-	}
-
-	private void writeCover(DataOutputStream dos) throws UnsupportedEncodingException, IOException {
-		dos.write("APIC".getBytes("ASCII"));
-		dos.writeInt(cover.length+4+coverMime.getBytes("ISO-8859-1").length); // write size of frame
-		dos.writeByte(0); //flag byte 1
-		dos.writeByte(0); //flag byte 2
-		dos.writeByte(0); //charset
-		dos.write(coverMime.getBytes("ISO-8859-1")); //mime type, e.g. image/jpeg
-		dos.write(new byte[]{0,3,0}); // null-terminated string, 3 = cover, 0 = description (null-terminated)
-		dos.write(cover); // write image data
-	}
-
-	private void writeTextFrame(DataOutputStream dos, String id, byte[] titleData) throws UnsupportedEncodingException, IOException {
-		dos.write(id.getBytes("ASCII")); //write frame identifier
-		dos.writeInt(titleData.length+1); //write size of frame
-		dos.writeShort(0); //flags
-		dos.writeByte(0); //charset = ISO-8859-1
-		dos.write(titleData); //write text data
-	}
-
-	private byte[] convertToSynchSafe(int newTagSize) {
-		byte[] ret = new byte[4];
-		for(int i = 3; i >= 0; i--){
-			ret[3-i] = (byte) ((newTagSize & (0x7F << i*7)) >> (i*7));
-		}
-		return ret;
 	}
 
 	private byte[] readMusicData(int tagSize) throws FileNotFoundException,
