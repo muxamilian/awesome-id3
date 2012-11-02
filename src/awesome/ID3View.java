@@ -25,7 +25,6 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 	private JTextField artistField;
 
 	private JTree fileTree;
-	private ImageIcon coverIcon; //we need ImageContainer and not JPanel because we want to set the image!
 	private JLabel coverContainer;
 	
 	private JSplitPane splitPane;
@@ -192,9 +191,8 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		
 		detailPanel.add(textDetailPanel, BorderLayout.NORTH);
 		
-		coverIcon = new ImageIcon(getDemoCoverImage());
 		coverContainer = new JLabel();
-		coverContainer.setIcon(coverIcon);		
+		coverContainer.setIcon(null);
 		coverContainer.addMouseListener(new MouseAdapter(){
 
 			/**
@@ -215,6 +213,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 							File file = fileChooser.getSelectedFile();
 							mp3.readCoverFromFile(file);
 							coverContainer.setIcon(new ImageIcon(mp3.getCover()));
+							coverContainer.setText("");
 						}
 					}
 				}
@@ -255,8 +254,14 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 			albumField.setText(mp3.getAlbum());
 			yearField.setText(mp3.getYear());
 			artistField.setText(mp3.getArtist());
-			coverIcon = new ImageIcon(mp3.getCover());
-			coverContainer.setIcon(coverIcon);
+			if(mp3.getCover() != null){
+				coverContainer.setText("");
+				coverContainer.setIcon(new ImageIcon(mp3.getCover()));
+			} else {
+				coverContainer.setText("Click here to add Cover");
+				coverContainer.setIcon(null);
+			}
+			
 			// mp3.getfile.getAbsolutePath
 		}
 	}
