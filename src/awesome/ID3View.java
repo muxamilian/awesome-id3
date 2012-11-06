@@ -8,6 +8,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import java.awt.*;
@@ -76,10 +77,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 				Object userObject = selectedNode.getUserObject();
 				if(userObject instanceof MP3File){
 					MP3File mp3 = (MP3File) userObject;
-					mp3.setAlbum(albumField.getText());
-					mp3.setArtist(artistField.getText());
-					mp3.setTitle(titleField.getText());
-					mp3.setYear(yearField.getText());
+					saveToMP3File(mp3);
 					try {
 						mp3.save();
 					} catch (IOException e) {
@@ -110,7 +108,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 	private void createTree(){
 		// initializes the tree
 		//TODO: Initialize with correct directory
-		DefaultMutableTreeNode topNode = buildFileTree(new Directory(new File(FileSystemView.getFileSystemView().getHomeDirectory(),"")));
+		DefaultMutableTreeNode topNode = buildFileTree(new Directory(new File(FileSystemView.getFileSystemView().getHomeDirectory(),"Music/mp3s")));
 		//in "" you can add a subpath e.g. /Music/iTunes for mac users
 		
 		fileTree = new JTree(topNode);
@@ -240,7 +238,24 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 	@Override
 	// The event handler for the tree
 	public void valueChanged(TreeSelectionEvent event) {
+		TreePath pathOld = event.getOldLeadSelectionPath();
+		if(pathOld != null && pathOld.getLastPathComponent() != null){
+			DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) pathOld.getLastPathComponent();
+			if(treeNode.getUserObject() instanceof MP3File){
+				MP3File mp3 = (MP3File) treeNode.getUserObject();
+				saveToMP3File(mp3);
+			}
+		}
 		updateDetailForm();
+	}
+
+
+	private void saveToMP3File(MP3File mp3) {
+		mp3.setAlbum(albumField.getText());
+		mp3.setArtist(artistField.getText());
+		mp3.setTitle(titleField.getText());
+		mp3.setYear(yearField.getText());
+		// cover is already saved
 	}
 
 
