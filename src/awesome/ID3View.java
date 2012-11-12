@@ -108,7 +108,9 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 	private void createTree(){
 		// initializes the tree
 		//TODO: Initialize with correct directory
-		DefaultMutableTreeNode topNode = buildFileTree(new Directory(new File(FileSystemView.getFileSystemView().getHomeDirectory(),"Music/mp3s")));
+		System.out.println("Controller: " + ID3Controller.getController());
+		System.out.println("MusicLib: " + ID3Controller.getController().getMusicLibrary());
+		DefaultMutableTreeNode topNode = buildFileTree(ID3Controller.getController().getMusicLibrary().getRootDirectory());
 		//in "" you can add a subpath e.g. /Music/iTunes for mac users
 		
 		fileTree = new JTree(topNode);
