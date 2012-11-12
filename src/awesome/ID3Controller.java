@@ -45,7 +45,6 @@ public class ID3Controller {
 	}
 	
 	private MusicLibrary chooseMusicLibrary() {
-		System.out.println("Choose Music Lib");
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		if(fileChooser.showOpenDialog(view) == JFileChooser.APPROVE_OPTION){ //view may be null here, no problem
