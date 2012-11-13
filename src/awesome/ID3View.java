@@ -30,6 +30,8 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 	
 	private JSplitPane splitPane;
 	
+	private JPopupMenu coverMenu;
+	
 	public ID3View() {
 		setSize(700, 500);
 		setTitle("Awesome ID3");
@@ -41,9 +43,60 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		createTree();
 		createMenu();
 		createDetailForm();
+		createCoverMenu();
 	}
 	
 	
+	private void createCoverMenu() {
+		coverMenu = new JPopupMenu();
+		
+		JMenuItem replaceCoverItem = new JMenuItem("Add/Replace Cover...");
+		replaceCoverItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
+				if(selectedNode == null)
+					return;
+				Object userObject = selectedNode.getUserObject();
+				if(userObject instanceof MP3File){
+					MP3File mp3 = (MP3File) userObject;
+					JFileChooser fileChooser = new JFileChooser();
+					fileChooser.setFileFilter(new ImageFileFilter());
+					if(fileChooser.showOpenDialog(ID3View.this) == JFileChooser.APPROVE_OPTION){
+						File file = fileChooser.getSelectedFile();
+						mp3.readCoverFromFile(file);
+						coverContainer.setIcon(new ImageIcon(mp3.getCover()));
+						coverContainer.setText("");
+					}
+				}
+			}
+		});
+		
+		JMenuItem deleteCoverItem = new JMenuItem("Delete Cover");
+		deleteCoverItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
+				if(selectedNode == null)
+					return;
+				Object userObject = selectedNode.getUserObject();
+				if(userObject instanceof MP3File){
+					MP3File mp3 = (MP3File) userObject;
+					mp3.deleteCover();
+					updateDetailForm();
+				}
+			}
+		});
+
+		coverMenu.add(replaceCoverItem);
+		coverMenu.add(deleteCoverItem);
+		
+		coverContainer.setComponentPopupMenu(coverMenu);
+	}
+
+
 	/**
 	 * creates and initializes the menu bar of the frame and its subcomponents.
 	 */
@@ -190,33 +243,6 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		
 		coverContainer = new JLabel();
 		coverContainer.setIcon(null);
-		coverContainer.addMouseListener(new MouseAdapter(){
-
-			/**
-			 * @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent)
-			 */
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if(e.getButton() == MouseEvent.BUTTON1){
-					DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
-					if(selectedNode == null)
-						return;
-					Object userObject = selectedNode.getUserObject();
-					if(userObject instanceof MP3File){
-						MP3File mp3 = (MP3File) userObject;
-						JFileChooser fileChooser = new JFileChooser();
-						fileChooser.setFileFilter(new ImageFileFilter());
-						if(fileChooser.showOpenDialog(ID3View.this) == JFileChooser.APPROVE_OPTION){
-							File file = fileChooser.getSelectedFile();
-							mp3.readCoverFromFile(file);
-							coverContainer.setIcon(new ImageIcon(mp3.getCover()));
-							coverContainer.setText("");
-						}
-					}
-				}
-			}
-			
-		});
 		
 		FlowLayout coverLayout = new FlowLayout();
 		coverLayout.setAlignment(FlowLayout.CENTER);

@@ -29,7 +29,7 @@ public class MP3File implements FilePathInfo {
 	private int tagSize = -1;
 	private int headerFlags = 0;
 	private String coverMime = "";
-	private byte[] cover = null;
+	private byte[] cover = new byte[]{0}; //not null to indicate that cover hasn't been parsed yet
 	
 	private List<ID3Frame> unknownFrames;
 	
@@ -180,7 +180,7 @@ public class MP3File implements FilePathInfo {
 			newTagSize += frame.getSize() + 10;
 		}
 		newTagSize += 40 + titleData.length + albumData.length + artistData.length + yearData.length;
-		if(cover != null)
+		if(cover != null && !cover.equals(new byte[]{0}))
 			newTagSize += 10 + 3 + cover.length + coverMime.getBytes(cs).length;
 		
 		// create outputstream
@@ -296,7 +296,7 @@ public class MP3File implements FilePathInfo {
 	 * @return the cover
 	 */
 	public byte[] getCover() {
-		if(cover == null) {
+		if(cover != null && cover.equals(new byte[]{0})) {
 			tryToParse();
 		}
 		return cover;
@@ -307,7 +307,8 @@ public class MP3File implements FilePathInfo {
 	 */
 	public void deleteCover() {
 		dirty |= (cover == null);
-		this.cover = null;		
+		this.cover = null;	
+		this.coverMime = "";
 	}
 
 	public void readCoverFromFile(File file) {
