@@ -1,6 +1,7 @@
 package awesome;
 
 import java.awt.EventQueue;
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JFileChooser;

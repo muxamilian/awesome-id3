@@ -323,14 +323,15 @@ public class MP3File implements FilePathInfo {
 				ImageIO.write(in, "png", tempFile);
 				buff = new byte[(int) tempFile.length()];
 				new FileInputStream(tempFile).read(buff);
+				coverMime = "image/png";
 			} else {
 				InputStream in = new BufferedInputStream(new FileInputStream(file));
 				buff = new byte[(int) file.length()];
 				in.read(buff);
+				coverMime = file.getName().endsWith(".png") ? "image/png" : "image/jpeg";
 			}
 			cover = buff;
 			dirty = true;
-			coverMime = file.getName().endsWith(".png") ? "image/png" : "image/jpeg";
 		} catch (IOException e) {
 			AwesomeID3.getController().getView().presentException(e);
 		}

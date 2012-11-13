@@ -62,7 +62,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 				if(userObject instanceof MP3File){
 					MP3File mp3 = (MP3File) userObject;
 					JFileChooser fileChooser = new JFileChooser();
-					fileChooser.setFileFilter(new ImageFileFilter());
+					fileChooser.setFileFilter(new AllImagesFileFilter());
 					if(fileChooser.showOpenDialog(ID3View.this) == JFileChooser.APPROVE_OPTION){
 						File file = fileChooser.getSelectedFile();
 						mp3.readCoverFromFile(file);
@@ -109,16 +109,18 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		JMenuItem itemSave = new JMenuItem("Save Changes");
 		JMenuItem itemReload = new JMenuItem("Reload MP3 Files");
 		JMenuItem itemChangeDir = new JMenuItem("Choose Music Directory...");
-		JMenuItem itemExit = new JMenuItem("Exit Awesome ID3");
-		
-		itemExit.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				AwesomeID3.getController().exitApplication();
-			}
-			
-		});
+//		unnecessary in my eyes because every user just closes the window
+//		by clicking on the X
+//		JMenuItem itemExit = new JMenuItem("Exit Awesome ID3");
+//		
+//		itemExit.addActionListener(new ActionListener(){
+//
+//			@Override
+//			public void actionPerformed(ActionEvent arg0) {
+//				AwesomeID3.getController().exitApplication();
+//			}
+//			
+//		});
 		
 		itemSave.addActionListener(new ActionListener(){
 
@@ -146,8 +148,8 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		menuMain.add(itemReload);
 		//menuMain.addSeparator(); //maybe it's prettier
 		menuMain.add(itemChangeDir);
-		menuMain.addSeparator();
-		menuMain.add(itemExit);
+//		menuMain.addSeparator();
+//		menuMain.add(itemExit);
 		
 		menuBar.add(menuMain);
 		
