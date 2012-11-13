@@ -3,20 +3,17 @@ package awesome;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.DataOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.awt.image.DataBufferByte;
-
 import javax.imageio.ImageIO;
 
 public class MP3File implements FilePathInfo {
@@ -318,12 +315,9 @@ public class MP3File implements FilePathInfo {
 			byte[] buff;
 			if(!(new ImageFileFilter().accept(file))) {
 				BufferedImage in = ImageIO.read(file);
-				File tempFile = new File(System.getProperty("java.io.tmpdir")+"temp.png");
-				ImageIO.write(in, "png", tempFile);
-				buff = new byte[(int) tempFile.length()];
-				FileInputStream fis = FileInputStream(tempFile);
-				fis.read(buff);
-				fis.close();
+				ByteArrayOutputStream baos = new ByteArrayOutputStream(); //this mucher is easier and faster than a temp file
+				ImageIO.write(in, "png", baos);
+				buff = baos.toByteArray();
 				coverMime = "image/png";
 			} else {
 				InputStream in = new BufferedInputStream(new FileInputStream(file));
@@ -337,11 +331,6 @@ public class MP3File implements FilePathInfo {
 		} catch (IOException e) {
 			AwesomeID3.getController().getView().presentException(e);
 		}
-	}
-
-	private FileInputStream FileInputStream(File tempFile) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 }
