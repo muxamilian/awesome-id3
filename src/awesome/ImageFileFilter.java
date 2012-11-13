@@ -9,9 +9,9 @@ public class ImageFileFilter extends FileFilter {
 	@Override
 	public boolean accept(File f) {
 		return  f.isDirectory() ||
-				f.getName().endsWith(".jpg") ||
-				f.getName().endsWith(".jpeg") ||
-				f.getName().endsWith(".png");
+				f.getName().toLowerCase().endsWith(".jpg") ||
+				f.getName().toLowerCase().endsWith(".jpeg") ||
+				f.getName().toLowerCase().endsWith(".png");
 	}
 
 	@Override
