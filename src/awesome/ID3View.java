@@ -72,17 +72,17 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
-				if(selectedNode == null)
-					return;
-				Object userObject = selectedNode.getUserObject();
-				if(userObject instanceof MP3File){
-					MP3File mp3 = (MP3File) userObject;
-					saveToMP3File(mp3);
-					try {
-						mp3.save();
-					} catch (IOException e) {
-						presentException(e);
+				if(selectedNode != null){
+					Object userObject = selectedNode.getUserObject();
+					if(userObject instanceof MP3File){
+						MP3File mp3 = (MP3File) userObject;
+						saveToMP3File(mp3); //save changes on the current file to the model
 					}
+				}
+				try {
+					ID3Controller.getController().getMusicLibrary().saveAllDirtyFiles(); //save all modified files
+				} catch (IOException e) {
+					presentException(e);
 				}
 			}
 			

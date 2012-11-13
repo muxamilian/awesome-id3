@@ -130,28 +130,28 @@ public class MP3File implements FilePathInfo {
 		int fsize = input.readInt();
 		//System.out.println("Frame Size: " + fsize);
 		int flags = input.readUnsignedShort();
-		switch (frameType) {
-			case "TALB" : setAlbum(input.readStringOfLengthWithCharsetByte(fsize)); break;
-			case "TIT2" : setTitle(input.readStringOfLengthWithCharsetByte(fsize)); break;
-			case "TPE1" : setArtist(input.readStringOfLengthWithCharsetByte(fsize)); break; //check whether TPE2 is correct
-			case "TYER" : setYear(input.readStringOfLengthWithCharsetByte(fsize)); break;
+		switch (frameType) { //the frame type indicates which info we read
+			case "TALB" : this.album = input.readStringOfLengthWithCharsetByte(fsize); break;
+			case "TIT2" : this.title = input.readStringOfLengthWithCharsetByte(fsize); break;
+			case "TPE1" : this.artist = input.readStringOfLengthWithCharsetByte(fsize); break; //check whether TPE2 is correct
+			case "TYER" : this.year = input.readStringOfLengthWithCharsetByte(fsize); break;
 			case "APIC" : parsePic(input, fsize); break;
 			default: byte[] buff2  = new byte[fsize]; input.read(buff2); 
-			unknownFrames.add(new ID3Frame(frameType, fsize, flags, buff2));
+			unknownFrames.add(new ID3Frame(frameType, fsize, flags, buff2)); //we need to restore the frame later
 			break;
 		}
 	}
 	
 	private void parsePic(ID3InputStream input, int fsize) throws FileNotFoundException, IOException {
-		Charset cs = input.readCharset();
-		coverMime = input.readStringUntilZero(cs);
-		int picType = input.readUnsignedByte();
-		if(picType != 0x03) 
+		Charset cs = input.readCharset(); //1. charset byte
+		coverMime = input.readStringUntilZero(cs); //2. mime string (zero-terminated)
+		int picType = input.readUnsignedByte(); // 3. byte indicating kind of picture, e.g. front cover
+		if(picType != 0x03) //we want only front covers
 			return;
-		String desc = input.readStringUntilZero(cs);
-		byte buff[] = new byte[fsize-1-coverMime.length()-1-1-desc.length()-1];
+		String desc = input.readStringUntilZero(cs); //read image description
+		byte buff[] = new byte[fsize-1-coverMime.length()-1-1-desc.length()-1]; //image is rest of the data
 		input.read(buff);
-		input.readPadding();
+		input.readPadding(); //image can be followed by zero bytes used to make modifications easier
 		cover = buff;
 	}
 	
@@ -204,6 +204,7 @@ public class MP3File implements FilePathInfo {
 		dos.write(musicData);
 		// and close
 		dos.close();
+		dirty = false;
 	}
 
 	private byte[] readMusicData(int tagSize) throws FileNotFoundException,
@@ -230,8 +231,8 @@ public class MP3File implements FilePathInfo {
 	 * @param title the title to set
 	 */
 	public void setTitle(String title) {
+		dirty |= !(title.equals(this.title));
 		this.title = title;
-		dirty = true;
 	}
 
 	/**
@@ -248,8 +249,8 @@ public class MP3File implements FilePathInfo {
 	 * @param artist the artist to set
 	 */
 	public void setArtist(String artist) {
+		dirty |= !(artist.equals(this.artist));
 		this.artist = artist;
-		dirty = true;
 	}
 
 	/**
@@ -266,8 +267,8 @@ public class MP3File implements FilePathInfo {
 	 * @param album the album to set
 	 */
 	public void setAlbum(String album) {
+		dirty |= !(album.equals(this.album));
 		this.album = album;
-		dirty = true;
 	}
 
 	/**
@@ -284,8 +285,8 @@ public class MP3File implements FilePathInfo {
 	 * @param year the year to set
 	 */
 	public void setYear(String year) {
+		dirty |= !(year.equals(this.year));
 		this.year = year;
-		dirty = true;
 	}
 
 	/**
