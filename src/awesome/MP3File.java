@@ -1,5 +1,6 @@
 package awesome;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
@@ -14,6 +15,8 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 public class MP3File implements FilePathInfo {
 	
@@ -310,10 +313,14 @@ public class MP3File implements FilePathInfo {
 	public void readCoverFromFile(File file) {
 		//TODO: Add conversion for other image formats like BMP, TIFF, etc
 		try {
-			InputStream in = new BufferedInputStream(new FileInputStream(file));
+			BufferedImage in = ImageIO.read(file);
 			byte buff[] = new byte[(int) file.length()];
 			in.read(buff);
 			cover = buff;
+//			InputStream in = new BufferedInputStream(new FileInputStream(file));
+//			byte buff[] = new byte[(int) file.length()];
+//			in.read(buff);
+//			cover = buff;
 			dirty = true;
 			coverMime = file.getName().endsWith(".png") ? "image/png" : "image/jpeg";
 			in.close();
