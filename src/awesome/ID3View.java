@@ -51,7 +51,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 	private void createMenu(){
 		JMenuBar menuBar = new JMenuBar();
 		
-		JMenu menuMain = new JMenu("Awesome ID3");
+		JMenu menuMain = new JMenu("File");
 		
 		JMenuItem itemSave = new JMenuItem("Save Changes");
 		JMenuItem itemReload = new JMenuItem("Reload MP3 Files");

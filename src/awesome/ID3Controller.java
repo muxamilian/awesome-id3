@@ -23,6 +23,7 @@ public class ID3Controller {
 	 */
 	public static void main(String[] args) {
 		controller = new ID3Controller();
+		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		controller.chooseMusicLibrary();
 		controller.initViewAndShow();
 	}
