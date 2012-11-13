@@ -313,7 +313,7 @@ public class MP3File implements FilePathInfo {
 		//TODO: Add conversion for other image formats like BMP, TIFF, etc
 		try {
 			byte[] buff;
-			if(!(new ImageFileFilter().accept(file))) {
+			if(!file.getName().endsWith("jpg") && !file.getName().endsWith("jpeg") && !file.getName().endsWith("png")) {
 				BufferedImage in = ImageIO.read(file);
 				ByteArrayOutputStream baos = new ByteArrayOutputStream(); //this mucher is easier and faster than a temp file
 				ImageIO.write(in, "png", baos);

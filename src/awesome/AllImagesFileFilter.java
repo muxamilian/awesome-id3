@@ -7,17 +7,16 @@ public class AllImagesFileFilter extends FileFilter {
 
 	@Override
 	public boolean accept(File f) {
-		return  f.isDirectory() ||
-				f.getName().toLowerCase().endsWith(".jpg") ||
-				f.getName().toLowerCase().endsWith(".jpeg") ||
-				f.getName().toLowerCase().endsWith(".png") ||
-				f.getName().toLowerCase().endsWith(".gif") ||
-				f.getName().toLowerCase().endsWith(".bmp");
+		if(f.isDirectory()) return true;
+		for(String suff : javax.imageio.ImageIO.getReaderFileSuffixes()){
+			if(f.getName().toLowerCase().endsWith(suff)) return true;
+		}
+		return false;
 	}
 
 	@Override
 	public String getDescription() {
-		return "Images";
+		return "Images supported by Java ImageIO";
 	}
 
 }
