@@ -1,5 +1,8 @@
 package awesome;
 
+import java.awt.EventQueue;
+import java.lang.reflect.InvocationTargetException;
+
 import javax.swing.JFileChooser;
 
 public class ID3Controller {
@@ -20,6 +23,7 @@ public class ID3Controller {
 	 */
 	public static void main(String[] args) {
 		controller = new ID3Controller();
+		controller.chooseMusicLibrary();
 		controller.initViewAndShow();
 	}
 	
@@ -36,7 +40,6 @@ public class ID3Controller {
 	public ID3Controller() {
 		// TODO: fileChooser in it's own window, 
 		// then a window to edit something shows up.
-		musicLib = chooseMusicLibrary();
 	}
 	
 	private void initViewAndShow(){
@@ -44,17 +47,34 @@ public class ID3Controller {
 		view.setVisible(true);
 	}
 	
-	private MusicLibrary chooseMusicLibrary() {
-		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		if(fileChooser.showOpenDialog(view) == JFileChooser.APPROVE_OPTION){ //view may be null here, no problem
-			return new MusicLibrary(new Directory(fileChooser.getSelectedFile()));
-		} else if(view != null){
-			return musicLib;
-		} else {
-			System.exit(0);
-			return null; //never called
+	private void chooseMusicLibrary() {
+		
+		try {
+			EventQueue.invokeAndWait( new Runnable()
+			{
+			  public void run() {
+				  JFileChooser fileChooser = new JFileChooser();
+				  fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				  if(fileChooser.showOpenDialog(view) == JFileChooser.APPROVE_OPTION){ //view may be null here, no problem
+						ID3Controller.getController().setMusicLibrary(new MusicLibrary(new Directory(fileChooser.getSelectedFile())));
+					} else if(view != null){
+						//nothing
+						return;
+					} else {
+						System.exit(0);
+					}
+			  }
+			} );
+		} catch (InvocationTargetException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
+		
+	}
+
+	private void setMusicLibrary(MusicLibrary musicLib) {
+		this.musicLib = musicLib;
 	}
 
 	// very wise! -- Max
