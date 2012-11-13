@@ -6,7 +6,6 @@ import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.filechooser.FileSystemView;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -55,12 +54,8 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
-				if(selectedNode == null)
-					return;
-				Object userObject = selectedNode.getUserObject();
-				if(userObject instanceof MP3File){
-					MP3File mp3 = (MP3File) userObject;
+				MP3File mp3 = getSelectedMP3();
+				if(mp3 != null){
 					JFileChooser fileChooser = new JFileChooser();
 					fileChooser.setFileFilter(new AllImagesFileFilter());
 					if(fileChooser.showOpenDialog(ID3View.this) == JFileChooser.APPROVE_OPTION){
@@ -78,12 +73,8 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
-				if(selectedNode == null)
-					return;
-				Object userObject = selectedNode.getUserObject();
-				if(userObject instanceof MP3File){
-					MP3File mp3 = (MP3File) userObject;
+				MP3File mp3 = getSelectedMP3();
+				if(mp3 != null){
 					mp3.deleteCover();
 					updateDetailForm();
 				}
@@ -126,14 +117,10 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
-				if(selectedNode != null){
-					Object userObject = selectedNode.getUserObject();
-					if(userObject instanceof MP3File){
-						MP3File mp3 = (MP3File) userObject;
-						saveToMP3File(mp3); //save changes on the current file to the model
-					}
-				}
+				MP3File mp3 = getSelectedMP3();
+				if(mp3 != null) 
+					saveToMP3File(mp3);
+				
 				try {
 					AwesomeID3.getController().getMusicLibrary().saveAllDirtyFiles(); //save all modified files
 				} catch (IOException e) {
@@ -288,12 +275,8 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 
 
 	private void updateDetailForm() {
-		DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
-		if(selectedNode == null)
-			return;
-		Object userObject = selectedNode.getUserObject();
-		if(userObject instanceof MP3File){
-			MP3File mp3 = (MP3File) userObject;
+		MP3File mp3 = getSelectedMP3();
+		if(mp3 != null){
 			titleField.setText(mp3.getTitle());
 			albumField.setText(mp3.getAlbum());
 			yearField.setText(mp3.getYear());
@@ -324,6 +307,18 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 	private void recalculateDividerLocation() {
 		//+25 is for scrollbar
 		splitPane.setDividerLocation((fileTree.getPreferredSize().getWidth()+25) / (float) splitPane.getSize().getWidth());
+	}
+	
+	private MP3File getSelectedMP3(){
+		DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
+		if(selectedNode == null)
+			return null;
+		Object userObject = selectedNode.getUserObject();
+		if(userObject instanceof MP3File){
+			return (MP3File) userObject;
+		} else {
+			return null;
+		}
 	}
 	
 }
