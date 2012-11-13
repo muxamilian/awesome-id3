@@ -302,9 +302,9 @@ public class MP3File implements FilePathInfo {
 	/**
 	 * @param cover the cover to set
 	 */
-	public void setCover(byte[] cover) {
-		this.cover = cover;
-		dirty = true;
+	public void deleteCover() {
+		dirty |= (cover == null);
+		this.cover = null;		
 	}
 
 	public void readCoverFromFile(File file) {
