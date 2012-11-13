@@ -62,7 +62,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				ID3Controller.getController().exitApplication();
+				AwesomeID3.getController().exitApplication();
 			}
 			
 		});
@@ -80,7 +80,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 					}
 				}
 				try {
-					ID3Controller.getController().getMusicLibrary().saveAllDirtyFiles(); //save all modified files
+					AwesomeID3.getController().getMusicLibrary().saveAllDirtyFiles(); //save all modified files
 				} catch (IOException e) {
 					presentException(e);
 				}
@@ -108,7 +108,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 	private void createTree(){
 		// initializes the tree
 		//TODO: Initialize with correct directory
-		DefaultMutableTreeNode topNode = buildFileTree(ID3Controller.getController().getMusicLibrary().getRootDirectory());
+		DefaultMutableTreeNode topNode = buildFileTree(AwesomeID3.getController().getMusicLibrary().getRootDirectory());
 		//in "" you can add a subpath e.g. /Music/iTunes for mac users
 		
 		fileTree = new JTree(topNode);
