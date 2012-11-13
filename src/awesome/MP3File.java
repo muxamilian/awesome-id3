@@ -15,6 +15,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.awt.image.DataBufferByte;
 
 import javax.imageio.ImageIO;
 
@@ -314,17 +315,22 @@ public class MP3File implements FilePathInfo {
 	public void readCoverFromFile(File file) {
 		//TODO: Add conversion for other image formats like BMP, TIFF, etc
 		try {
-			BufferedImage in = ImageIO.read(file);
-			byte buff[] = new byte[(int) file.length()];
-			in.read(buff);
+			// mit Resource Leaks können wir leben, was meint ihr?
+			byte[] buff;
+			if(!(new ImageFileFilter().accept(file))) {
+				BufferedImage in = ImageIO.read(file);
+				File tempFile = new File(System.getProperty("java.io.tmpdir")+"temp.png");
+				ImageIO.write(in, "png", tempFile);
+				buff = new byte[(int) tempFile.length()];
+				new FileInputStream(tempFile).read(buff);
+			} else {
+				InputStream in = new BufferedInputStream(new FileInputStream(file));
+				buff = new byte[(int) file.length()];
+				in.read(buff);
+			}
 			cover = buff;
-//			InputStream in = new BufferedInputStream(new FileInputStream(file));
-//			byte buff[] = new byte[(int) file.length()];
-//			in.read(buff);
-//			cover = buff;
 			dirty = true;
 			coverMime = file.getName().endsWith(".png") ? "image/png" : "image/jpeg";
-			in.close();
 		} catch (IOException e) {
 			AwesomeID3.getController().getView().presentException(e);
 		}
