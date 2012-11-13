@@ -315,19 +315,21 @@ public class MP3File implements FilePathInfo {
 	public void readCoverFromFile(File file) {
 		//TODO: Add conversion for other image formats like BMP, TIFF, etc
 		try {
-			// mit Resource Leaks können wir leben, was meint ihr?
 			byte[] buff;
 			if(!(new ImageFileFilter().accept(file))) {
 				BufferedImage in = ImageIO.read(file);
 				File tempFile = new File(System.getProperty("java.io.tmpdir")+"temp.png");
 				ImageIO.write(in, "png", tempFile);
 				buff = new byte[(int) tempFile.length()];
-				new FileInputStream(tempFile).read(buff);
+				FileInputStream fis = FileInputStream(tempFile);
+				fis.read(buff);
+				fis.close();
 				coverMime = "image/png";
 			} else {
 				InputStream in = new BufferedInputStream(new FileInputStream(file));
 				buff = new byte[(int) file.length()];
 				in.read(buff);
+				in.close(); 
 				coverMime = file.getName().endsWith(".png") ? "image/png" : "image/jpeg";
 			}
 			cover = buff;
@@ -335,6 +337,11 @@ public class MP3File implements FilePathInfo {
 		} catch (IOException e) {
 			AwesomeID3.getController().getView().presentException(e);
 		}
+	}
+
+	private FileInputStream FileInputStream(File tempFile) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
