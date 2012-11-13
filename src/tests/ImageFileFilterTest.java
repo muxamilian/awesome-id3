@@ -7,19 +7,19 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 
-import awesome.ImageFileFilter;
+import awesome.AllImagesFileFilter;
 
 public class ImageFileFilterTest {
 	
-	private ImageFileFilter filter;
+	private AllImagesFileFilter filter;
 	
 	@Before
 	public void setUp() throws Exception {
-		filter = new ImageFileFilter();
+		filter = new AllImagesFileFilter();
 	}
 
 	@Test
-	public void testAcceptFile() {
+	public void testIsPNGorJPEG() {
 		assertFalse(filter.accept(new File("dings.txt")));
 		assertFalse(filter.accept(new File("dingsjpg")));
 		

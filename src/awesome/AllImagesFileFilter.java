@@ -13,6 +13,12 @@ public class AllImagesFileFilter extends FileFilter {
 		}
 		return false;
 	}
+	
+	public static boolean isPNGorJPEG(File f){
+		return  f.getName().toLowerCase().endsWith(".jpg") ||
+				f.getName().toLowerCase().endsWith(".jpeg") ||
+				f.getName().toLowerCase().endsWith(".png");
+	}
 
 	@Override
 	public String getDescription() {
