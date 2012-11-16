@@ -11,6 +11,12 @@ public class ID3OutputStream extends DataOutputStream {
 		super(out);
 	}
 	
+	/**
+	 * write the tag header size in 28b format.
+	 * @param newTagSize
+	 * @throws IOException
+	 */
+	
 	public void writeAsSynchSafe(int newTagSize) throws IOException {
 		byte[] ret = new byte[4];
 		for(int i = 3; i >= 0; i--){
@@ -18,6 +24,14 @@ public class ID3OutputStream extends DataOutputStream {
 		}
 		write(ret);
 	}
+	
+	/**
+	 * write the cover to the stream.
+	 * @param cover
+	 * @param coverMime
+	 * @throws UnsupportedEncodingException
+	 * @throws IOException
+	 */
 	
 	public void writeCover(byte[] cover, String coverMime) throws UnsupportedEncodingException, IOException {
 		write("APIC".getBytes("ASCII"));
@@ -29,7 +43,15 @@ public class ID3OutputStream extends DataOutputStream {
 		write(new byte[]{0,3,0}); // null-terminated string, 3 = cover, 0 = description (null-terminated)
 		write(cover); // write image data
 	}
-
+	
+	/**
+	 * write the given text frame to the stream.
+	 * @param id
+	 * @param titleData
+	 * @throws UnsupportedEncodingException
+	 * @throws IOException
+	 */
+	
 	public void writeTextFrame(String id, byte[] titleData) throws UnsupportedEncodingException, IOException {
 		write(id.getBytes("ASCII")); //write frame identifier
 		writeInt(titleData.length+1); //write size of frame
@@ -37,6 +59,13 @@ public class ID3OutputStream extends DataOutputStream {
 		writeByte(0); //charset = ISO-8859-1
 		write(titleData); //write text data
 	}
+	
+	/**
+	 * write a binary frame to the stream.
+	 * @param frame
+	 * @throws UnsupportedEncodingException
+	 * @throws IOException
+	 */
 	
 	public void writeFrame(ID3Frame frame) throws UnsupportedEncodingException, IOException {
 		write(frame.getId().getBytes("ASCII"));

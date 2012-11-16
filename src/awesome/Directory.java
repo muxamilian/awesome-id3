@@ -11,7 +11,7 @@ public class Directory implements FilePathInfo {
 	
 	public Directory(File file){
 		this.file = file;
-		
+		//now create children
 		File[] contents = file.listFiles();
 		subFiles = new ArrayList<FilePathInfo>(contents.length);
 		for(File f : contents){

@@ -24,6 +24,11 @@ public class MusicLibrary {
 		return rootDir;
 	}
 	
+	/**
+	 * save recursively all files which were modfied.
+	 * @throws IOException
+	 */
+	
 	public void saveAllDirtyFiles() throws IOException{
 		saveDirtyMP3s(rootDir);
 	}

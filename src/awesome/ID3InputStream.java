@@ -12,6 +12,13 @@ public class ID3InputStream extends DataInputStream {
 		super(arg0);
 	}
 	
+	/**
+	 * read a zero-terminated string with given charset.
+	 * @param cs the charset to use for decode
+	 * @return
+	 * @throws IOException
+	 */
+	
 	public String readStringUntilZero(Charset cs) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		int in;
@@ -21,20 +28,48 @@ public class ID3InputStream extends DataInputStream {
 		return new String(baos.toByteArray(), cs);
 	}
 	
+	/**
+	 * read string of given length, including a leading charset byte.
+	 * @param length the length of the string
+	 * @return
+	 * @throws IOException
+	 */
+	
 	public String readStringOfLengthWithCharsetByte(int length) throws IOException {
 		Charset cs = readCharset();
 		return readStringOfLength(length-1, cs);
 	}
 	
+	/**
+	 * calls readStringOfLength(length, charset) with default charset.
+	 * @param length
+	 * @return
+	 * @throws IOException
+	 */
+	
 	public String readStringOfLength(int length) throws IOException {
 		return readStringOfLength(length, Charset.forName("ISO-8859-1"));
 	}
+	
+	/**
+	 * reads a string of given length respecting the given charset
+	 * @param length
+	 * @param cs
+	 * @return
+	 * @throws IOException
+	 */
 	
 	public String readStringOfLength(int length, Charset cs) throws IOException {
 		byte[] buffer = new byte[length];
 		read(buffer);
 		return new String(buffer, cs);
 	}
+	
+	/**
+	 * read a 28b-int as specified in ID3 specification for tag size.
+	 * @return
+	 * @throws IOException
+	 */
 	
 	public int readSyncSafeSize() throws IOException{
 		int size = 0;
@@ -44,6 +79,12 @@ public class ID3InputStream extends DataInputStream {
 		}
 		return size;
 	}
+	
+	/**
+	 * interprete the next byte as charset
+	 * @return
+	 * @throws IOException
+	 */
 	
 	public Charset readCharset() throws IOException {
 		String csName;		
@@ -56,7 +97,13 @@ public class ID3InputStream extends DataInputStream {
 		}
 		return Charset.forName(csName);
 	}
-
+	
+	/**
+	 * if possible, read appended zero-bytes.
+	 * @return
+	 * @throws IOException
+	 */
+	
 	public int readPadding() throws IOException {
 		int paddy = 0;
 		while(true){
