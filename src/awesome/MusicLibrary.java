@@ -12,7 +12,6 @@ import java.io.IOException;
 
 public class MusicLibrary {
 	private Directory rootDir;
-	private boolean dirty = false;
 	
 	
 	public MusicLibrary(Directory rootDir){
@@ -55,16 +54,16 @@ public class MusicLibrary {
 	private boolean checkForDirtyMP3s(Directory dir) {		
 		for(FilePathInfo fpi : dir.listFiles()){
 			if(fpi.isDirectory()){
-				checkForDirtyMP3s((Directory)fpi);				
+				if(checkForDirtyMP3s((Directory)fpi)) return true;				
 			}
 			else {
 				MP3File mp3 = (MP3File) fpi;
 				if(mp3.isDirty()) 
-					dirty = true;
+					return true;
 			}			
 		}	
 		
-		return dirty;
+		return false;
 	}
 }
 

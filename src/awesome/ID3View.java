@@ -39,7 +39,8 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 	public ID3View() {
 		setSize(700, 500);
 		setTitle("Awesome ID3");
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); //TODO: Change to ID3Controller.exitApplication()
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); 
+		//TODO: Change to ID3Controller.exitApplication()
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				
@@ -71,10 +72,6 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 	      
 	      switch(result) { 
 	         case JOptionPane.YES_OPTION: {
-
-					MP3File mp3 = getSelectedMP3();
-					if(mp3 != null) 
-						saveToMP3File(mp3);
 					
 					try {
 						AwesomeID3.getController().getMusicLibrary().saveAllDirtyFiles(); 
