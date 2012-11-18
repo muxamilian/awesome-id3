@@ -12,6 +12,8 @@ import java.io.IOException;
 
 public class MusicLibrary {
 	private Directory rootDir;
+	private boolean dirty = false;
+	
 	
 	public MusicLibrary(Directory rootDir){
 		this.rootDir = rootDir;
@@ -32,6 +34,7 @@ public class MusicLibrary {
 	public void saveAllDirtyFiles() throws IOException{
 		saveDirtyMP3s(rootDir);
 	}
+	
 
 	private void saveDirtyMP3s(Directory dir) throws IOException {
 		for(FilePathInfo fpi : dir.listFiles()){
@@ -43,4 +46,29 @@ public class MusicLibrary {
 			}
 		}
 	}
+	
+	public boolean checkDirty()
+	{		
+		return checkForDirtyMP3s(rootDir);
+	}
+		
+	private boolean checkForDirtyMP3s(Directory dir) {		
+		for(FilePathInfo fpi : dir.listFiles()){
+			if(fpi.isDirectory()){
+				checkForDirtyMP3s((Directory)fpi);				
+			}
+			else {
+				MP3File mp3 = (MP3File) fpi;
+				if(mp3.isDirty()) 
+					dirty = true;
+			}			
+		}	
+		
+		return dirty;
+	}
 }
+
+
+
+
+

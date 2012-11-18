@@ -2,6 +2,8 @@ package awesome;
 
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -10,13 +12,15 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.junit.Test;
+
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.awt.event.*;
 
-public class ID3View extends JFrame implements TreeSelectionListener, TreeExpansionListener {
+public class ID3View extends JFrame implements TreeSelectionListener, TreeExpansionListener  {
 	
 	private static final long serialVersionUID = 3797307884995261587L;
 	private JTextField titleField;
@@ -31,10 +35,24 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 	
 	private JPopupMenu coverMenu;
 	
+	
 	public ID3View() {
 		setSize(700, 500);
 		setTitle("Awesome ID3");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //TODO: Change to ID3Controller.exitApplication()
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); //TODO: Change to ID3Controller.exitApplication()
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				
+				if (getSelectedMP3() != null)
+						saveToMP3File(getSelectedMP3());
+				
+				if (AwesomeID3.getController().getMusicLibrary().checkDirty())
+					exit();
+				
+				else System.exit(0);
+				
+			}
+		});
 		
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		splitPane.setDividerLocation(-1);
@@ -44,6 +62,32 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		createDetailForm();
 		createCoverMenu();
 	}
+		
+	private void exit() { 
+	      int result = JOptionPane.showConfirmDialog(null, 
+	      "Would you like to save before exiting the application", 
+	      "close application", 
+	      JOptionPane.YES_NO_OPTION); 	      
+	      
+	      switch(result) { 
+	         case JOptionPane.YES_OPTION: {
+
+					MP3File mp3 = getSelectedMP3();
+					if(mp3 != null) 
+						saveToMP3File(mp3);
+					
+					try {
+						AwesomeID3.getController().getMusicLibrary().saveAllDirtyFiles(); 
+					} catch (IOException e) {
+						presentException(e);
+					}
+	        	 System.exit(0); 
+	         }   	 
+	 
+	         case JOptionPane.NO_OPTION: 
+	        	 System.exit(0); 
+	      } 
+	   } 
 	
 	
 	private void createCoverMenu() {
@@ -118,12 +162,14 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				MP3File mp3 = getSelectedMP3();
+				MP3File mp3 = getSelectedMP3();				
 				if(mp3 != null) 
 					saveToMP3File(mp3);
 				
 				try {
 					AwesomeID3.getController().getMusicLibrary().saveAllDirtyFiles(); //save all modified files
+					
+					
 				} catch (IOException e) {
 					presentException(e);
 				}
@@ -311,6 +357,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 	}
 	
 	private MP3File getSelectedMP3(){
+
 		DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent();
 		if(selectedNode == null)
 			return null;
@@ -321,5 +368,8 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 			return null;
 		}
 	}
+
+		
+	
 	
 }

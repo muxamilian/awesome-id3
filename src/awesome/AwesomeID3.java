@@ -1,7 +1,6 @@
 package awesome;
 
 import java.awt.EventQueue;
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JFileChooser;
@@ -24,7 +23,8 @@ public class AwesomeID3 {
 	 */
 	public static void main(String[] args) {
 		controller = new AwesomeID3();
-		System.setProperty("apple.laf.useScreenMenuBar", "true");		controller.chooseMusicLibrary();
+		System.setProperty("apple.laf.useScreenMenuBar", "true");
+		controller.chooseMusicLibrary();
 		controller.initViewAndShow();
 	}
 	
@@ -79,7 +79,7 @@ public class AwesomeID3 {
 	}
 
 	// very wise! -- Max
-	public void exitApplication(){
+	public void exitApplication(){		
 		System.exit(0); //TODO: should check for dirty data and save it before exiting.
 	}
 	

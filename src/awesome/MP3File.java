@@ -46,6 +46,11 @@ public class MP3File implements FilePathInfo {
 		} 
 	}
 	
+	public boolean isDirty()
+	{
+		return dirty;
+	}
+	
 	@Override
 	public File getFile() {
 		return file;
