@@ -2,8 +2,6 @@ package awesome;
 
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -11,8 +9,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-
-import org.junit.Test;
 
 import java.awt.*;
 import java.io.File;
@@ -34,7 +30,6 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 	private JSplitPane splitPane;
 	
 	private JPopupMenu coverMenu;
-	
 	
 	public ID3View() {
 		setSize(700, 500);
@@ -181,9 +176,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 	
 	private void createTree(){
 		// initializes the tree
-		//TODO: Initialize with correct directory
 		DefaultMutableTreeNode topNode = buildFileTree(AwesomeID3.getController().getMusicLibrary().getRootDirectory());
-		//in "" you can add a subpath e.g. /Music/iTunes for mac users
 		
 		fileTree = new JTree(topNode);
 		fileTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -196,7 +189,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		
 		treePane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		treePane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		
+		//add the tree to the left side of the split pane
 		splitPane.setLeftComponent(treePane);
 	}
 	
@@ -204,7 +197,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 	private DefaultMutableTreeNode buildFileTree(FilePathInfo pathInfo) {
 		if(pathInfo.isDirectory() && (MP3File.containsMP3s(pathInfo.getFile()))){
 			DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(pathInfo);
-			ArrayList<FilePathInfo> subFiles = (ArrayList<FilePathInfo>) pathInfo.listFiles();
+			ArrayList<FilePathInfo> subFiles = (ArrayList<FilePathInfo>) pathInfo.listFiles(); //get all children
 			for(FilePathInfo fpi : subFiles){
 				if(MP3File.containsMP3s(fpi.getFile())) {
 					rootNode.add(buildFileTree(fpi));
@@ -294,6 +287,20 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 			}
 		}
 		updateDetailForm();
+		
+		boolean enableFields = getSelectedMP3() != null;
+		
+		albumField.setEnabled(enableFields);
+		artistField.setEnabled(enableFields);
+		titleField.setEnabled(enableFields);
+		yearField.setEnabled(enableFields);
+		
+		if(!enableFields){
+			albumField.setText(null);
+			artistField.setText(null);
+			titleField.setText(null);
+			yearField.setText(null);
+		}
 	}
 
 
@@ -317,7 +324,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 				coverContainer.setText("");
 				coverContainer.setIcon(new ImageIcon(mp3.getCover()));
 			} else {
-				coverContainer.setText("Click here to add Cover");
+				coverContainer.setText("Right-Click here to add Cover");
 				coverContainer.setIcon(null);
 			}
 			
