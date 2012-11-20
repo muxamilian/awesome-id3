@@ -78,9 +78,8 @@ public class AwesomeID3 {
 		this.musicLib = musicLib;
 	}
 
-	// very wise! -- Max
 	public void exitApplication(){		
-		System.exit(0); //TODO: should check for dirty data and save it before exiting.
+		view.beforeExit();
 	}
 	
 	public ID3View getView(){
