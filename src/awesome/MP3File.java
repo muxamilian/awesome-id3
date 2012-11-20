@@ -18,7 +18,7 @@ import javax.imageio.ImageIO;
 
 public class MP3File implements FilePathInfo {
 	
-	File file;
+	private File file;
 	private String title = null;
 	private String artist = null;
 	private String album = null;
@@ -106,6 +106,9 @@ public class MP3File implements FilePathInfo {
 	
 	
 	private void parse() throws IOException {
+		
+		cover = null;
+		
 		ID3InputStream input = new ID3InputStream(new FileInputStream(file));
 		
 		byte[] hstart = new byte[5];
@@ -302,6 +305,7 @@ public class MP3File implements FilePathInfo {
 		if(cover != null && cover.equals(new byte[]{0})) {
 			tryToParse();
 		}
+
 		return cover;
 	}
 
@@ -309,7 +313,7 @@ public class MP3File implements FilePathInfo {
 	 * @param cover the cover to set
 	 */
 	public void deleteCover() {
-		dirty |= (cover == null);
+		dirty |= (cover != null);
 		this.cover = null;	
 		this.coverMime = "";
 	}

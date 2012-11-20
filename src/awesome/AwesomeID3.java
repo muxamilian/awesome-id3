@@ -1,6 +1,7 @@
 package awesome;
 
 import java.awt.EventQueue;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JFileChooser;
@@ -39,8 +40,6 @@ public class AwesomeID3 {
 	}
 	
 	public AwesomeID3() {
-		// TODO: fileChooser in it's own window, 
-		// then a window to edit something shows up.
 	}
 	
 	private void initViewAndShow(){
@@ -79,7 +78,16 @@ public class AwesomeID3 {
 	}
 
 	public void exitApplication(){		
-		view.beforeExit();
+		if(musicLib.checkDirty()){
+			if(view.askUserForDirtyFiles()){
+				try {
+					musicLib.saveAllDirtyFiles();
+				} catch (IOException e) {
+					view.presentException(e);
+				}
+			}
+		}
+		System.exit(0);
 	}
 	
 	public ID3View getView(){

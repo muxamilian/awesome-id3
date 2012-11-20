@@ -43,49 +43,35 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		//TODO: Change to ID3Controller.exitApplication()
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				beforeExit();
+				MP3File mp3 = getSelectedMP3();
+				if(mp3 != null) saveToMP3File(mp3);
+				AwesomeID3.getController().exitApplication();
 			}
 		});
 		
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		splitPane.setDividerLocation(-1);
 		getContentPane().add(splitPane, BorderLayout.CENTER);
+		
 		createTree();
 		createMenu();
 		createDetailForm();
 		createCoverMenu();
 	}
-	
-	public void beforeExit() {
-		if (getSelectedMP3() != null)
-			saveToMP3File(getSelectedMP3());
-	
-		if (AwesomeID3.getController().getMusicLibrary().checkDirty())
-			exit();
 		
-		else System.exit(0);
-	}
-		
-	private void exit() { 
+	public boolean askUserForDirtyFiles() { 
 	      int result = JOptionPane.showConfirmDialog(null, 
-	      "Would you like to save before exiting the application?", 
-	      "Close application", 
+	      "Would you like to save the dirty files?", 
+	      "Save Files", 
 	      JOptionPane.YES_NO_OPTION); 	      
 	      
 	      switch(result) { 
-	         case JOptionPane.YES_OPTION: {
-					
-					try {
-						AwesomeID3.getController().getMusicLibrary().saveAllDirtyFiles(); 
-					} catch (IOException e) {
-						presentException(e);
-					}
-	        	 System.exit(0); 
-	         }   	 
+	         case JOptionPane.YES_OPTION: return true;  	 
 	 
-	         case JOptionPane.NO_OPTION: 
-	        	 System.exit(0); 
+	         default: 
+	        	 return false; 
 	      } 
+	      
 	   } 
 	
 	
