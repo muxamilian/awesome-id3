@@ -24,7 +24,7 @@ public class MP3File implements FilePathInfo {
 	private String album = null;
 	private String year = null;
 	private boolean dirty = false; //indicates whether an attribute has changed
-	private int tagSize = -1;
+	private int tagSize = -1; //not including the ten header bytes
 	private int headerFlags = 0;
 	private String coverMime = "";
 	private byte[] cover = new byte[]{0}; //not null to indicate that cover hasn't been parsed yet
@@ -167,10 +167,6 @@ public class MP3File implements FilePathInfo {
 	public void save() throws IOException{
 		if(!dirty) return; //if nothing changed, we don't need to save anything
 		
-		// read music data
-		byte musicData[] = readMusicData(tagSize);
-		// delete the file so that it can recreated
-		file.delete();
 		//we always use ISO-8859-1 as it is the ID3 standard encoding
 		Charset cs = Charset.forName("ISO-8859-1");
 		
@@ -189,12 +185,20 @@ public class MP3File implements FilePathInfo {
 		if(cover != null && !cover.equals(new byte[]{0}))
 			newTagSize += 10 + 3 + cover.length + coverMime.getBytes(cs).length;
 		
+		boolean rewrite = newTagSize > tagSize;
+		
+		// read music data
+		byte musicData[] = null;
+		if(rewrite) {
+			musicData = readMusicData(tagSize);
+		}
+		
 		// create outputstream
-		ID3OutputStream dos = new ID3OutputStream(new FileOutputStream(file));
+		ID3Output dos = new ID3Output(file, rewrite);
 		//write magic bytes and size of tag
 		dos.write(ID3_HEADER_START); //write Header start
 		dos.writeByte(headerFlags);
-		dos.writeAsSynchSafe(newTagSize);
+		dos.writeAsSynchSafe(Math.max(tagSize, newTagSize));
 		
 		// write the four elemental text frames and the cover
 		dos.writeTextFrame("TPE1", artistData);
@@ -209,10 +213,16 @@ public class MP3File implements FilePathInfo {
 			dos.writeFrame(frame);
 		}
 		
-		//tag ist finished, we can write the music data
-		dos.write(musicData);
+		if(rewrite){
+			//tag ist finished, we can write the music data
+			dos.write(musicData);
+		} else { 
+			dos.writePadding(tagSize-newTagSize);
+			System.out.println("added padding: " + (tagSize-newTagSize));
+		}
 		// and close
 		dos.close();
+		tagSize = newTagSize;
 		dirty = false;
 	}
 
