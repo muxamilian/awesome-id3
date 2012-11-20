@@ -185,12 +185,12 @@ public class MP3File implements FilePathInfo {
 		if(cover != null && !cover.equals(new byte[]{0}))
 			newTagSize += 10 + 3 + cover.length + coverMime.getBytes(cs).length;
 		
-		boolean rewrite = newTagSize > tagSize;
+		boolean rewrite = newTagSize > tagSize; //did the tag segment grow?
 		
 		// read music data
 		byte musicData[] = null;
 		if(rewrite) {
-			musicData = readMusicData(tagSize);
+			musicData = readMusicData(tagSize); //read music data for rewrite
 		}
 		
 		// create outputstream
@@ -217,12 +217,11 @@ public class MP3File implements FilePathInfo {
 			//tag ist finished, we can write the music data
 			dos.write(musicData);
 		} else { 
-			dos.writePadding(tagSize-newTagSize);
-			System.out.println("added padding: " + (tagSize-newTagSize));
+			dos.writePadding(tagSize-newTagSize); //fill up the now shorter segment with zero bytes
 		}
 		// and close
 		dos.close();
-		tagSize = newTagSize;
+		tagSize = Math.max(newTagSize, tagSize); //if the tag segment grew, update here for further writes
 		dirty = false;
 	}
 
