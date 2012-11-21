@@ -1,5 +1,6 @@
 package awesome;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -63,6 +64,20 @@ public class MusicLibrary {
 			}			
 		}	
 		
+		return false;
+	}
+	
+	public static boolean containsMP3s(File rootFile) {
+		if(rootFile.isFile()) {
+			return MP3File.isMP3(rootFile);
+		} else if(rootFile.isDirectory()){
+			File[] subFiles = rootFile.listFiles();
+			for(File f:subFiles) {
+				if(containsMP3s(f)) {
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 }

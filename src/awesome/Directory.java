@@ -15,7 +15,7 @@ public class Directory implements FilePathInfo {
 		File[] contents = file.listFiles();
 		subFiles = new ArrayList<FilePathInfo>(contents.length);
 		for(File f : contents){
-			if(f.isDirectory()){
+			if(f.isDirectory() && MusicLibrary.containsMP3s(f)){
 				subFiles.add(new Directory(f));
 			} else if(MP3File.isMP3(f)){
 				subFiles.add(new MP3File(f));

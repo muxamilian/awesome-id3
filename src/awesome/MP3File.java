@@ -7,7 +7,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -86,22 +85,6 @@ public class MP3File implements FilePathInfo {
 		}
 		byte[] rightBytes = ID3_HEADER_START;
 		return Arrays.equals(isRightID3,rightBytes);
-	}
-	
-	
-	//TODO: Move method to another class as it is not related to MP3File itself
-	public static boolean containsMP3s(File rootFile) {
-		if(rootFile.isFile()) {
-			return MP3File.isMP3(rootFile);
-		} else if(rootFile.isDirectory()){
-			File[] subFiles = rootFile.listFiles();
-			for(File f:subFiles) {
-				if(MP3File.containsMP3s(f)) {
-					return true;
-				}
-			}
-		}
-		return false;
 	}
 	
 	
