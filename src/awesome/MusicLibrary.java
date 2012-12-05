@@ -3,6 +3,15 @@ package awesome;
 import java.io.File;
 import java.io.IOException;
 
+import javax.xml.parsers.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.*;
+import javax.xml.transform.stream.*;
+
+import org.w3c.dom.*;
+
+import org.w3c.dom.Document;
+
 /**
  * This class is used to store the current working directory and (later)
  * to encapsulate the xml-cache functions. Only one MusicLibrary should exist
@@ -13,10 +22,14 @@ import java.io.IOException;
 
 public class MusicLibrary {
 	private Directory rootDir;
+	private File rootAsFile;
+	private File xmlLocation;
 	
 	
-	public MusicLibrary(Directory rootDir){
+	public MusicLibrary(Directory rootDir, File directory){
 		this.rootDir = rootDir;
+		this.rootAsFile = directory;
+		this.xmlLocation = new File(directory.getAbsolutePath()+"/cache.xml");
 	}
 	
 	/**
@@ -31,8 +44,51 @@ public class MusicLibrary {
 	 * @throws IOException
 	 */
 	
+	DocumentBuilderFactory docFactory;
+	DocumentBuilder docBuilder;
+	Document doc;
+	public void saveXML() throws Exception {	
+		// initializiation
+		docFactory = DocumentBuilderFactory.newInstance();
+		docBuilder = docFactory.newDocumentBuilder();
+		
+		// root elem
+		doc = docBuilder.newDocument();
+		Element rootElement = doc.createElement("musicLibrary");
+		doc.appendChild(rootElement);
+	
+		// document elems
+		rootElement.appendChild(buildDirTree(rootDir));
+		
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		Transformer transformer = transformerFactory.newTransformer();
+		DOMSource source = new DOMSource(doc);
+		
+		StreamResult result =  new StreamResult(xmlLocation);
+		transformer.transform(source, result);
+	}
+	
+	Element buildDirTree(FilePathInfo file) {
+		if(file instanceof MP3File) {
+			Element mp3 = doc.createElement("mp3");
+			return mp3;
+		} else {
+			Element dir = doc.createElement("directory");
+			for(FilePathInfo fpi:file.listFiles()) {
+				dir.appendChild(buildDirTree(fpi));
+			}
+			return dir;
+		}
+	}
+	
 	public void saveAllDirtyFiles() throws IOException{
 		saveDirtyMP3s(rootDir);
+		try {
+			saveXML();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 

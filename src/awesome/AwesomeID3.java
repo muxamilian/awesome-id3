@@ -56,7 +56,7 @@ public class AwesomeID3 {
 				  JFileChooser fileChooser = new JFileChooser();
 				  fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				  if(fileChooser.showOpenDialog(view) == JFileChooser.APPROVE_OPTION){ //view may be null here, no problem
-						AwesomeID3.getController().setMusicLibrary(new MusicLibrary(new Directory(fileChooser.getSelectedFile())));
+						AwesomeID3.getController().setMusicLibrary(new MusicLibrary(new Directory(fileChooser.getSelectedFile()), fileChooser.getSelectedFile()));
 					} else if(view != null){
 						//nothing
 						return;
