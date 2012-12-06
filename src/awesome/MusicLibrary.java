@@ -60,6 +60,7 @@ public class MusicLibrary {
 		// document elems
 		rootElement.appendChild(buildDirTree(rootDir));
 		
+		// write XML
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
 		DOMSource source = new DOMSource(doc);
@@ -70,7 +71,26 @@ public class MusicLibrary {
 	
 	Element buildDirTree(FilePathInfo file) {
 		if(file instanceof MP3File) {
+			file = (MP3File) file;
 			Element mp3 = doc.createElement("mp3");
+			Element title = doc.createElement("title");
+			title.setTextContent(((MP3File) file).getTitle());
+			Element artist = doc.createElement("artist");
+			artist.setTextContent(((MP3File) file).getArtist());
+			Element album = doc.createElement("album");
+			album.setTextContent(((MP3File) file).getAlbum());
+			Element year = doc.createElement("year");
+			year.setTextContent(((MP3File) file).getYear());
+			Element cover = doc.createElement("cover");
+			// TODO: set cover base64 encoded.
+			// use apache commons lib. it is already included
+			
+			mp3.appendChild(title);
+			mp3.appendChild(artist);
+			mp3.appendChild(album);
+			mp3.appendChild(year);
+			mp3.appendChild(cover);
+			
 			return mp3;
 		} else {
 			Element dir = doc.createElement("directory");
