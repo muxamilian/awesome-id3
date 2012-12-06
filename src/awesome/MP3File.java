@@ -26,6 +26,15 @@ public class MP3File implements FilePathInfo {
 	private int tagSize = -1; //not including the ten header bytes
 	private int headerFlags = 0;
 	private String coverMime = "";
+	
+	public void setCover(byte[] cover) {
+		this.cover = cover;
+	}
+
+	public void setCoverMime(String coverMime) {
+		this.coverMime = coverMime;
+	}
+
 	private byte[] cover = new byte[]{0}; //not null to indicate that cover hasn't been parsed yet
 	
 	private List<ID3Frame> unknownFrames;
@@ -147,6 +156,10 @@ public class MP3File implements FilePathInfo {
 		cover = buff;
 	}
 	
+	public String getCoverMime() {
+		return coverMime;
+	}
+
 	public void save() throws IOException{
 		if(!dirty) return; //if nothing changed, we don't need to save anything
 		
