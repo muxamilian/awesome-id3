@@ -119,15 +119,19 @@ public class MusicLibrary {
 			album.setTextContent(f.getAlbum());
 			Element year = doc.createElement("year");
 			year.setTextContent(f.getYear());
-			Element cover = doc.createElement("cover");
-			cover.setAttribute("mime", f.getCoverMime());
-			cover.setTextContent(DatatypeConverter.printBase64Binary(f.getCover()));
+			Element cover = null;
+			if(f.getCover() != null){
+				cover = doc.createElement("cover");
+				cover.setAttribute("mime", f.getCoverMimeType());
+				cover.setTextContent(DatatypeConverter.printBase64Binary(f.getCover()));
+			}
 			
 			mp3.appendChild(title);
 			mp3.appendChild(artist);
 			mp3.appendChild(album);
 			mp3.appendChild(year);
-			mp3.appendChild(cover);
+			if( cover != null)
+				mp3.appendChild(cover);
 			
 			return mp3;
 		} else {
@@ -157,7 +161,8 @@ public class MusicLibrary {
 				saveDirtyMP3s((Directory)fpi);
 			} else {
 				MP3File mp3 = (MP3File) fpi;
-				mp3.save(); //MP3File does the dirty check 
+				if(mp3.isDirty())
+					ID3Parser.save(mp3);
 			}
 		}
 	}
@@ -179,20 +184,6 @@ public class MusicLibrary {
 			}			
 		}	
 		
-		return false;
-	}
-	
-	public static boolean containsMP3s(File rootFile) {
-		if(rootFile.isFile()) {
-			return MP3File.isMP3(rootFile);
-		} else if(rootFile.isDirectory()){
-			File[] subFiles = rootFile.listFiles();
-			for(File f:subFiles) {
-				if(containsMP3s(f)) {
-					return true;
-				}
-			}
-		}
 		return false;
 	}
 }

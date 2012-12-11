@@ -7,10 +7,11 @@ import java.lang.reflect.InvocationTargetException;
 import javax.swing.JFileChooser;
 
 public class AwesomeID3 {
-	
-	//Singleton pattern variable
+
+	// Singleton pattern variable
 	private static AwesomeID3 controller;
 	private MusicLibrary musicLib;
+
 	/**
 	 * @return the musicLib
 	 */
@@ -19,6 +20,7 @@ public class AwesomeID3 {
 	}
 
 	private ID3View view = null;
+
 	/**
 	 * @param args
 	 */
@@ -28,58 +30,65 @@ public class AwesomeID3 {
 		controller.chooseMusicLibrary();
 		controller.initViewAndShow();
 	}
-	
+
 	/**
-	 * Offers access to the singleton ID3Controller object which was
-	 * created during startup.
+	 * Offers access to the singleton ID3Controller object which was created
+	 * during startup.
+	 * 
 	 * @return the ID3Controller
 	 */
-	
+
 	public static AwesomeID3 getController() {
 		return controller;
 	}
-	
+
 	public AwesomeID3() {
 	}
-	
-	private void initViewAndShow(){
+
+	private void initViewAndShow() {
 		view = new ID3View();
 		view.setVisible(true);
 	}
-	
+
 	private void chooseMusicLibrary() {
-		
+
 		try {
-			EventQueue.invokeAndWait( new Runnable()
-			{
-			  public void run() {
-				  JFileChooser fileChooser = new JFileChooser();
-				  fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				  if(fileChooser.showOpenDialog(view) == JFileChooser.APPROVE_OPTION){ //view may be null here, no problem
-						AwesomeID3.getController().setMusicLibrary(new MusicLibrary(new Directory(fileChooser.getSelectedFile()), fileChooser.getSelectedFile()));
-					} else if(view != null){
-						//nothing
+			EventQueue.invokeAndWait(new Runnable() {
+				public void run() {
+					JFileChooser fileChooser = new JFileChooser();
+					fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+					if (fileChooser.showOpenDialog(view) == JFileChooser.APPROVE_OPTION) { // view may be null here, no problem
+						Directory rootDir = new Directory(fileChooser.getSelectedFile());
+						try {
+							DirectoryWalker.buildFileTree(rootDir);
+						} catch (IOException e) {
+							if(view != null){
+								view.presentException(e);
+							}
+						}
+						AwesomeID3.getController().setMusicLibrary(new MusicLibrary(rootDir, fileChooser.getSelectedFile()));
+					} else if (view != null) {
+						// nothing
 						return;
 					} else {
 						System.exit(0);
 					}
-			  }
-			} );
+				}
+			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+
 	}
 
 	private void setMusicLibrary(MusicLibrary musicLib) {
 		this.musicLib = musicLib;
 	}
 
-	public void exitApplication(){		
-		if(musicLib.checkDirty()){
-			if(view.askUserForDirtyFiles()){
+	public void exitApplication() {
+		if (musicLib.checkDirty()) {
+			if (view.askUserForDirtyFiles()) {
 				try {
 					musicLib.saveAllDirtyFiles();
 				} catch (IOException e) {
@@ -89,8 +98,8 @@ public class AwesomeID3 {
 		}
 		System.exit(0);
 	}
-	
-	public ID3View getView(){
+
+	public ID3View getView() {
 		return view;
 	}
 }
