@@ -147,9 +147,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 					saveToMP3File(mp3);
 				
 				try {
-					AwesomeID3.getController().getMusicLibrary().saveAllDirtyFiles(); //save all modified files
-					
-					
+					AwesomeID3.getController().getMusicLibrary().saveAllDirtyFiles(); //save all modified files					
 				} catch (IOException e) {
 					presentException(e);
 				}
@@ -358,8 +356,5 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 			return null;
 		}
 	}
-
-		
-	
 	
 }
