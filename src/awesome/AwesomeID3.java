@@ -66,7 +66,7 @@ public class AwesomeID3 {
 								view.presentException(e);
 							}
 						}
-						AwesomeID3.getController().setMusicLibrary(new MusicLibrary(rootDir, fileChooser.getSelectedFile()));
+						AwesomeID3.getController().setMusicLibrary(new MusicLibrary(rootDir));
 					} else if (view != null) {
 						// nothing
 						return;

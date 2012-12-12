@@ -23,14 +23,12 @@ import org.w3c.dom.Document;
 
 public class MusicLibrary {
 	private Directory rootDir;
-	private File rootAsFile;
 	private File xmlLocation;
 	
 	
-	public MusicLibrary(Directory rootDir, File directory){
+	public MusicLibrary(Directory rootDir){
 		this.rootDir = rootDir;
-		this.rootAsFile = directory;
-		this.xmlLocation = new File(directory.getAbsolutePath()+"/cache.xml");
+		this.xmlLocation = new File(rootDir.getFile(), "cache.xml");
 	}
 	
 	/**
@@ -41,7 +39,7 @@ public class MusicLibrary {
 	}
 	
 	public boolean isCacheCurrent() {
-		return xmlLocation.lastModified() >= rootAsFile.lastModified();
+		return xmlLocation.lastModified() >= rootDir.getFile().lastModified();
 	}
 	
 	/**
@@ -58,7 +56,7 @@ public class MusicLibrary {
 		docBuilder = docFactory.newDocumentBuilder();
 		doc = docBuilder.parse(xmlLocation);
 		
-		Node rootNode = doc.getChildNodes().item(0); // should be only one because it is the root dir
+		//Node rootNode = doc.getChildNodes().item(0); // should be only one because it is the root dir
 	}
 	
 	FilePathInfo buildFromCache(Element elem) {
@@ -148,8 +146,7 @@ public class MusicLibrary {
 		try {
 			saveXML();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			AwesomeID3.getController().getView().presentException(e);
 		}
 	}
 	
