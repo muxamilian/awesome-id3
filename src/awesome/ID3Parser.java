@@ -18,6 +18,13 @@ public class ID3Parser {
 	
 	public static final byte[] ID3_HEADER_START = {0x49,0x44,0x33,0x03,0x00};
 	
+	/**
+	 * reads the tag segment of a mp3 file and saves the read information to the given MP3File object.
+	 * dirty is reset to false after parsing.
+	 * @param mp3
+	 * @throws IOException
+	 */
+	
 	public static void parseID3(MP3File mp3) throws IOException{
 		ID3InputStream input = new ID3InputStream(new FileInputStream(mp3.getFile()));
 		
@@ -43,7 +50,13 @@ public class ID3Parser {
 		input.close();
 		mp3.setDirty(false);
 	}
-
+	
+	/**
+	 * checks whether a given File is a MP3 with ID3v2 tags or not.
+	 * @param f
+	 * @return
+	 */
+	
 	public static boolean isMP3(File f) {
 		if(!f.getName().endsWith(".mp3") || !f.exists()){
 			return false; //we only respect files with mp3 suffix as we don't want read every file.
@@ -92,6 +105,13 @@ public class ID3Parser {
 		mp3.setCover(buff);
 	}
 	
+	/**
+	 * read an image file and sets the cover of the mp3 file to its contents.
+	 * images in other formats as jpeg or png will be converted.
+	 * @param mp3
+	 * @param file
+	 */
+	
 	public static void readCoverFromFile(MP3File mp3, File file) {
 		//TODO: Add conversion for other image formats like BMP, TIFF, etc
 		try {
@@ -115,6 +135,12 @@ public class ID3Parser {
 			AwesomeID3.getController().getView().presentException(e);
 		}
 	}
+	
+	/**
+	 * saves the id3 tag segment with data set in the mp3 file.
+	 * @param mp3
+	 * @throws IOException
+	 */
 	
 	public static void save(MP3File mp3) throws IOException{
 		if(!mp3.isDirty()) return; //if nothing changed, we don't need to save anything

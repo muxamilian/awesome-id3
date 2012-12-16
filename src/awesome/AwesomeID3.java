@@ -26,9 +26,10 @@ public class AwesomeID3 {
 	 */
 	public static void main(String[] args) {
 		controller = new AwesomeID3();
+		//for mac os x menu bar
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
-		controller.chooseMusicLibrary();
-		controller.initViewAndShow();
+		controller.chooseMusicLibrary(); //ask the user for music directory
+		controller.initViewAndShow(); //init View
 	}
 
 	/**
@@ -60,18 +61,18 @@ public class AwesomeID3 {
 					if (fileChooser.showOpenDialog(view) == JFileChooser.APPROVE_OPTION) { // view may be null here, no problem
 						Directory rootDir = new Directory(fileChooser.getSelectedFile());
 						try {
-							DirectoryWalker.buildFileTree(rootDir);
+							DirectoryWalker.buildFileTree(rootDir); //scan for mp3s
 						} catch (IOException e) {
 							if(view != null){
 								view.presentException(e);
 							}
 						}
-						AwesomeID3.getController().setMusicLibrary(new MusicLibrary(rootDir));
+						AwesomeID3.getController().setMusicLibrary(new MusicLibrary(rootDir)); //for later access
 					} else if (view != null) {
 						// nothing
 						return;
 					} else {
-						System.exit(0);
+						System.exit(0); //no mp3s => no tag editor
 					}
 				}
 			});
@@ -87,10 +88,10 @@ public class AwesomeID3 {
 	}
 
 	public void exitApplication() {
-		if (musicLib.checkDirty()) {
-			if (view.askUserForDirtyFiles()) {
+		if (musicLib.checkDirty()) { //unsaved mp3s?
+			if (view.askUserForDirtyFiles()) { //does the user want to save?
 				try {
-					musicLib.saveAllDirtyFiles();
+					musicLib.saveAllDirtyFiles(); //save it
 				} catch (IOException e) {
 					view.presentException(e);
 				}

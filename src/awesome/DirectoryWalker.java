@@ -12,6 +12,13 @@ import java.io.IOException;
  */
 public class DirectoryWalker {
 	
+	/**
+	 * scans the file system recursively for directories and mp3 files and add
+	 * references to them to the parent object. MP3s get automatically parsed.
+	 * @param rootDir
+	 * @throws IOException
+	 */
+	
 	public static void buildFileTree(Directory rootDir) throws IOException{
 		File[] contents = rootDir.getFile().listFiles();
 		for(File f : contents){
@@ -27,6 +34,12 @@ public class DirectoryWalker {
 			}
 		}
 	}
+	
+	/**
+	 * determines whether a directory contains at least one mp3 file in its fs-subtree
+	 * @param subDir
+	 * @return
+	 */
 	
 	private static boolean containsMP3(Directory subDir) {
 		return !subDir.listFiles().isEmpty();
