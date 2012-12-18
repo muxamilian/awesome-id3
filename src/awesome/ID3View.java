@@ -81,8 +81,8 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 				MP3File mp3 = getSelectedMP3();
 				if(mp3 != null){
 					JFileChooser fileChooser = new JFileChooser();
-					fileChooser.setFileFilter(new AllImagesFileFilter());
 					fileChooser.setAcceptAllFileFilterUsed(false);
+					fileChooser.setFileFilter(new AllImagesFileFilter());
 					if(fileChooser.showOpenDialog(ID3View.this) == JFileChooser.APPROVE_OPTION){
 						File file = fileChooser.getSelectedFile();
 						ID3Parser.readCoverFromFile(mp3, file);
