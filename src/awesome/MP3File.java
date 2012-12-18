@@ -156,7 +156,7 @@ public class MP3File implements FilePathInfo {
 		headerFlags = flags;
 	}
 
-	protected void setTageSize(int size) {
+	protected void setTagSize(int size) {
 		tagSize = size;		
 	}
 

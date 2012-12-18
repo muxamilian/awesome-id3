@@ -51,7 +51,7 @@ public class MusicLibrary {
 		docBuilder = docFactory.newDocumentBuilder();
 		doc = docBuilder.parse(xmlLocation);
 		
-		//Node rootNode = doc.getChildNodes().item(0); // should be only one because it is the root dir
+		// Todo call buildFromCache on the root diretory tag and replace the music lib with the value
 	}
 	
 	FilePathInfo buildFromCache(Element elem) {
@@ -69,8 +69,7 @@ public class MusicLibrary {
 		} else {
 			Directory directory = new Directory(new File(elem.getAttribute("path")));
 			for(int i=0; i<children.getLength(); i++) {
-				buildFromCache((Element) children.item(i));
-				// TODO: Must add method to add files to a Director
+				directory.addChild(buildFromCache((Element) children.item(i)));
 			}
 			return directory;
 		}

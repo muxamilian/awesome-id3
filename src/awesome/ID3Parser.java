@@ -37,7 +37,7 @@ public class ID3Parser {
 		
 		mp3.setHeaderFlags(input.readUnsignedByte());
 		//TODO: Don't touch files which have flags set
-		mp3.setTageSize(input.readSyncSafeSize());
+		mp3.setTagSize(input.readSyncSafeSize());
 		//Extended Header
 		byte[] tag = new byte[mp3.getTagSize()];
 		input.read(tag);
@@ -202,7 +202,7 @@ public class ID3Parser {
 		}
 		// and close
 		dos.close();
-		mp3.setTageSize(Math.max(newTagSize, mp3.getTagSize())); //if the tag segment grew, update here for further writes
+		mp3.setTagSize(Math.max(newTagSize, mp3.getTagSize())); //if the tag segment grew, update here for further writes
 		mp3.setDirty(false);
 	}
 
