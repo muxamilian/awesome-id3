@@ -2,7 +2,6 @@ package awesome;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.*;
@@ -24,14 +23,12 @@ import org.w3c.dom.Document;
 
 public class MusicLibrary {
 	private Directory rootDir;
-	private File rootAsFile;
 	private File xmlLocation;
 	
 	
-	public MusicLibrary(Directory rootDir, File directory){
+	public MusicLibrary(Directory rootDir){
 		this.rootDir = rootDir;
-		this.rootAsFile = directory;
-		this.xmlLocation = new File(directory.getAbsolutePath()+"/cache.xml");
+		this.xmlLocation = new File(rootDir.getFile(), "cache.xml");
 	}
 	
 	/**
@@ -42,7 +39,7 @@ public class MusicLibrary {
 	}
 	
 	public boolean isCacheCurrent() {
-		return xmlLocation.lastModified() >= rootAsFile.lastModified();
+		return xmlLocation.lastModified() >= rootDir.getFile().lastModified();
 	}
 	
 	DocumentBuilderFactory docFactory;
@@ -54,7 +51,7 @@ public class MusicLibrary {
 		docBuilder = docFactory.newDocumentBuilder();
 		doc = docBuilder.parse(xmlLocation);
 		
-		Node rootNode = doc.getChildNodes().item(0); // should be only one because it is the root dir
+		//Node rootNode = doc.getChildNodes().item(0); // should be only one because it is the root dir
 	}
 	
 	FilePathInfo buildFromCache(Element elem) {
@@ -114,15 +111,19 @@ public class MusicLibrary {
 			album.setTextContent(f.getAlbum());
 			Element year = doc.createElement("year");
 			year.setTextContent(f.getYear());
-			Element cover = doc.createElement("cover");
-			cover.setAttribute("mime", f.getCoverMime());
-			cover.setTextContent(DatatypeConverter.printBase64Binary(f.getCover()));
+			Element cover = null;
+			if(f.getCover() != null){
+				cover = doc.createElement("cover");
+				cover.setAttribute("mime", f.getCoverMimeType());
+				cover.setTextContent(DatatypeConverter.printBase64Binary(f.getCover()));
+			}
 			
 			mp3.appendChild(title);
 			mp3.appendChild(artist);
 			mp3.appendChild(album);
 			mp3.appendChild(year);
-			mp3.appendChild(cover);
+			if( cover != null)
+				mp3.appendChild(cover);
 			
 			return mp3;
 		} else {
@@ -140,8 +141,7 @@ public class MusicLibrary {
 		try {
 			saveXML();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			AwesomeID3.getController().getView().presentException(e);
 		}
 	}
 	
@@ -152,7 +152,8 @@ public class MusicLibrary {
 				saveDirtyMP3s((Directory)fpi);
 			} else {
 				MP3File mp3 = (MP3File) fpi;
-				mp3.save(); //MP3File does the dirty check 
+				if(mp3.isDirty())
+					ID3Parser.save(mp3);
 			}
 		}
 	}
@@ -174,20 +175,6 @@ public class MusicLibrary {
 			}			
 		}	
 		
-		return false;
-	}
-	
-	public static boolean containsMP3s(File rootFile) {
-		if(rootFile.isFile()) {
-			return MP3File.isMP3(rootFile);
-		} else if(rootFile.isDirectory()){
-			File[] subFiles = rootFile.listFiles();
-			for(File f:subFiles) {
-				if(containsMP3s(f)) {
-					return true;
-				}
-			}
-		}
 		return false;
 	}
 }

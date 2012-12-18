@@ -11,16 +11,11 @@ public class Directory implements FilePathInfo {
 	
 	public Directory(File file){
 		this.file = file;
-		//now create children
-		File[] contents = file.listFiles();
-		subFiles = new ArrayList<FilePathInfo>(contents.length);
-		for(File f : contents){
-			if(f.isDirectory() && MusicLibrary.containsMP3s(f)){
-				subFiles.add(new Directory(f));
-			} else if(MP3File.isMP3(f)){
-				subFiles.add(new MP3File(f));
-			}
-		}
+		subFiles = new ArrayList<FilePathInfo>();
+	}
+	
+	public void addChild(FilePathInfo fpi){
+		subFiles.add(fpi);
 	}
 	
 	@Override
