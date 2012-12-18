@@ -10,7 +10,7 @@ public class AllImagesFileFilter extends FileFilter {
 		for(String suff : javax.imageio.ImageIO.getReaderFileSuffixes()){
 			if(f.getName().toLowerCase().endsWith(suff)) return true;
 		}
-		return false;
+		return f.isDirectory();
 	}
 	
 	public static boolean isPNGorJPEG(File f){

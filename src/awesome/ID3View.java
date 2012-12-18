@@ -2,10 +2,12 @@ package awesome;
 
 
 import javax.swing.*;
+import javax.swing.text.*;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.text.BadLocationException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -83,6 +85,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 					JFileChooser fileChooser = new JFileChooser();
 					fileChooser.setAcceptAllFileFilterUsed(false);
 					fileChooser.setFileFilter(new AllImagesFileFilter());
+					fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 					if(fileChooser.showOpenDialog(ID3View.this) == JFileChooser.APPROVE_OPTION){
 						File file = fileChooser.getSelectedFile();
 						ID3Parser.readCoverFromFile(mp3, file);
@@ -242,6 +245,23 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		JLabel yearLabel = new JLabel("<html><b>Year</b></html>");
 		textDetailPanel.add(yearLabel, textDetailConstraints);
 		yearField = new JTextField(25);
+		yearField.setDocument(new PlainDocument(){
+			private static final long serialVersionUID = -1004617962388265479L;
+
+			public void insertString(int offset, String  str, AttributeSet attr) throws BadLocationException {
+					if (str == null) return;
+					
+					for(int i = 0; i < str.length(); i++){
+						if(!Character.isDigit(str.charAt(i))){
+							return;
+						}
+					}
+					
+					if ((getLength() + str.length()) <= 4) {
+						super.insertString(offset, str, attr);
+					}
+			}
+		});
 		textDetailPanel.add(yearField, textDetailConstraintsFill);
 		
 		JLabel artistLabel = new JLabel("<html><b>Artist</b></html>");

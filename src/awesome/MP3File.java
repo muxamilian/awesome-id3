@@ -120,6 +120,11 @@ public class MP3File implements FilePathInfo {
 	 * @param year the year to set
 	 */
 	public void setYear(String year) {
+		String padding = "";
+		for(int i = 0; i < 4-year.length(); i++){
+			padding += "0";
+		}
+		year = padding + year;
 		dirty |= !(year.equals(this.year));
 		this.year = year;
 	}
