@@ -45,11 +45,6 @@ public class MusicLibrary {
 		return xmlLocation.lastModified() >= rootAsFile.lastModified();
 	}
 	
-	/**
-	 * save recursively all files which were modfied.
-	 * @throws IOException
-	 */
-	
 	DocumentBuilderFactory docFactory;
 	DocumentBuilder docBuilder;
 	Document doc;
