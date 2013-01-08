@@ -14,8 +14,10 @@ public class MP3File implements FilePathInfo {
 	private boolean dirty = false; //indicates whether an attribute has changed
 	private int tagSize = -1; //not including the ten header bytes
 	private int headerFlags = 0;
-	private String coverMimeType = "";
+	private String coverMimeType = "", coverDescription = "";
 	
+	
+
 	private byte[] cover = null; //not null to indicate that cover hasn't been parsed yet
 	
 	private List<ID3Frame> unknownFrames;
@@ -151,6 +153,20 @@ public class MP3File implements FilePathInfo {
 
 	public void setDirty(boolean b) {
 		dirty = b;		
+	}
+	
+	/**
+	 * @return the coverDescription
+	 */
+	public String getCoverDescription() {
+		return coverDescription;
+	}
+
+	/**
+	 * @param coverDescription the coverDescription to set
+	 */
+	public void setCoverDescription(String coverDescription) {
+		this.coverDescription = coverDescription;
 	}
 
 	protected void addUnknownFrame(ID3Frame id3Frame) {

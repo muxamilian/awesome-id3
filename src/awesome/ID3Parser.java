@@ -99,6 +99,7 @@ public class ID3Parser {
 		if(picType != 0x03) //we want only front covers
 			return;
 		String desc = input.readStringUntilZero(cs); //read image description
+		mp3.setCoverDescription(desc);
 		byte buff[] = new byte[fsize-1-mp3.getCoverMimeType().length()-1-1-desc.length()-1]; //image is rest of the data
 		input.read(buff);
 		input.readPadding(); //image can be followed by zero bytes used to make modifications easier
@@ -129,6 +130,7 @@ public class ID3Parser {
 				in.close(); 
 				mp3.setCoverMimeType(file.getName().endsWith(".png") ? "image/png" : "image/jpeg");
 			}
+			mp3.setCoverDescription("");
 			mp3.setCover(buff);
 			mp3.setDirty(true);
 		} catch (IOException e) {
@@ -164,7 +166,7 @@ public class ID3Parser {
 		boolean writeCover = mp3.getCover() != null;
 		
 		if(writeCover)
-			newTagSize += 10 + 3 + mp3.getCover().length + mp3.getCoverMimeType().getBytes(cs).length;
+			newTagSize += 10 + 3 + mp3.getCover().length + mp3.getCoverMimeType().getBytes(cs).length + mp3.getCoverDescription().getBytes(cs).length;
 		
 		boolean rewrite = newTagSize > mp3.getTagSize(); //did the tag segment grow?
 		
@@ -187,7 +189,7 @@ public class ID3Parser {
 		dos.writeTextFrame("TIT2", titleData);
 		dos.writeTextFrame("TYER", yearData);
 		if(writeCover)
-			dos.writeCover(mp3.getCover(), mp3.getCoverMimeType());
+			dos.writeCover(mp3.getCover(), mp3.getCoverMimeType(), mp3.getCoverDescription());
 		
 		// write all the unkown frames not modified by our software
 		for(ID3Frame frame : mp3.getUnknownFrames()){

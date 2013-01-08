@@ -56,7 +56,7 @@ public class MusicLibrary {
 	
 	FilePathInfo buildFromCache(Element elem) {
 		NodeList children = elem.getChildNodes();
-		if(elem.getNodeName() == "mp3") {
+		if(elem.getNodeName() == "file") {
 			MP3File mp3 = new MP3File(new File(elem.getAttribute("path")));
 			mp3.setTitle(elem.getElementsByTagName("title").item(0).getNodeValue());
 			mp3.setArtist(elem.getElementsByTagName("artist").item(0).getNodeValue());
@@ -82,7 +82,7 @@ public class MusicLibrary {
 		
 		// root elem
 		doc = docBuilder.newDocument();
-		Element rootElement = doc.createElement("musicLibrary");
+		Element rootElement = doc.createElement("cache");
 		doc.appendChild(rootElement);
 	
 		// document elems
@@ -100,8 +100,8 @@ public class MusicLibrary {
 	Element buildDirTree(FilePathInfo file) {
 		if(file instanceof MP3File) {
 			MP3File f = (MP3File) file;
-			Element mp3 = doc.createElement("mp3");
-			mp3.setAttribute("path", f.getFile().getAbsolutePath());
+			Element mp3 = doc.createElement("file");
+			mp3.setAttribute("name", f.getFile().getName());
 			Element title = doc.createElement("title");
 			title.setTextContent(f.getTitle());
 			Element artist = doc.createElement("artist");
@@ -110,27 +110,34 @@ public class MusicLibrary {
 			album.setTextContent(f.getAlbum());
 			Element year = doc.createElement("year");
 			year.setTextContent(f.getYear());
-			Element cover = null;
-			if(f.getCover() != null){
-				cover = doc.createElement("cover");
-				cover.setAttribute("mime", f.getCoverMimeType());
-				cover.setTextContent(DatatypeConverter.printBase64Binary(f.getCover()));
-			}
 			
 			mp3.appendChild(title);
 			mp3.appendChild(artist);
 			mp3.appendChild(album);
 			mp3.appendChild(year);
-			if( cover != null)
+			
+			if(f.getCover() != null){
+				Element cover = doc.createElement("cover");
+				cover.setAttribute("size", ""+f.getCover().length);
+				Element mimetype = doc.createElement("mimetype");
+				mimetype.setTextContent(f.getCoverMimeType());
+				cover.appendChild(mimetype);
+				Element description = doc.createElement("description");
+				description.setTextContent(f.getCoverDescription());
+				cover.appendChild(description);
+				Element data = doc.createElement("data");
+				data.setTextContent(DatatypeConverter.printBase64Binary(f.getCover()));
+				cover.appendChild(data);
 				mp3.appendChild(cover);
+			}
 			
 			return mp3;
 		} else {
-			Element dir = doc.createElement("directory");
+			Element dir = doc.createElement("folder");
 			for(FilePathInfo fpi:file.listFiles()) {
 				dir.appendChild(buildDirTree(fpi));
 			}
-			dir.setAttribute("path", file.getFile().getAbsolutePath());
+			dir.setAttribute("name", file.getFile().getName());
 			return dir;
 		}
 	}
