@@ -1,12 +1,9 @@
 package awesome;
 
-import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JFileChooser;
-import javax.swing.SwingUtilities;
 
 public class AwesomeID3 {
 
