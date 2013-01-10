@@ -8,7 +8,7 @@ public class AllImagesFileFilter extends FileFilter {
 	@Override
 	public boolean accept(File f) {
 		for(String suff : javax.imageio.ImageIO.getReaderFileSuffixes()){
-			if(f.getName().toLowerCase().endsWith(suff)) return true;
+			if(f.getName().toLowerCase().endsWith("." + suff)) return true;
 		}
 		return f.isDirectory();
 	}

@@ -218,6 +218,11 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		}
 	}
 	
+	/**
+	 * this method is called by AwesomeID3 to notify the view that the music library has changed and tree must be rebuilt.
+	 * @param musicLib
+	 */
+	
 	public void changeMusicLibrary(MusicLibrary musicLib){
 		DefaultMutableTreeNode topNode = buildFileTree(musicLib.getRootDirectory());
 		fileTree.setModel(new DefaultTreeModel(topNode));
