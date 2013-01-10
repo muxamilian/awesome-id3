@@ -6,12 +6,13 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JFileChooser;
+import javax.swing.SwingUtilities;
 
 public class AwesomeID3 {
 
 	// Singleton pattern variable
 	private static AwesomeID3 controller;
-	private MusicLibrary musicLib;
+	private MusicLibrary musicLib = null;
 
 	/**
 	 * @return the musicLib
@@ -34,7 +35,8 @@ public class AwesomeID3 {
 		else
 			controller.chooseMusicLibrary(); //ask the user for music directory
 		
-		controller.initViewAndShow(); //init View
+		if(controller.getMusicLibrary() != null)
+			controller.initViewAndShow(); //init View
 	}
 
 	/**
@@ -57,27 +59,14 @@ public class AwesomeID3 {
 	}
 
 	private void chooseMusicLibrary() {
-
-		try {
-			EventQueue.invokeAndWait(new Runnable() {
-				public void run() {
-					JFileChooser fileChooser = new JFileChooser();
-					fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-					if (fileChooser.showOpenDialog(view) == JFileChooser.APPROVE_OPTION) { // view may be null here, no problem
-						loadMusicLibrary(fileChooser.getSelectedFile());
-					} else if (view != null) {
-						// nothing
-						return;
-					} else {
-						System.exit(0); //no mp3s => no tag editor
-					}
-				}
-			});
-		} catch (InvocationTargetException | InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		if (fileChooser.showOpenDialog(view) == JFileChooser.APPROVE_OPTION) { // view may be null here, no problem
+			loadMusicLibrary(fileChooser.getSelectedFile());
+		} else /*if (view != null)*/ {
+			// nothing
+			return;
 		}
-
 	}
 	
 	private void loadMusicLibrary(File file) {
@@ -111,5 +100,19 @@ public class AwesomeID3 {
 
 	public ID3View getView() {
 		return view;
+	}
+
+	public void changeMusicLibrary() {
+		if (musicLib.checkDirty()) { //unsaved mp3s?
+			if (view.askUserForDirtyFiles()) { //does the user want to save?
+				try {
+					musicLib.saveAllDirtyFiles(); //save it
+				} catch (IOException e) {
+					view.presentException(e);
+				}
+			}
+		}
+		chooseMusicLibrary();
+		view.changeMusicLibrary(musicLib);
 	}
 }

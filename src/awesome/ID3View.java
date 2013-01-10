@@ -9,6 +9,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -158,6 +159,15 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 			
 		});
 		
+		itemChangeDir.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AwesomeID3.getController().changeMusicLibrary();
+			}
+			
+		});
+		
 		menuMain.add(itemSave);
 		menuMain.addSeparator();
 		menuMain.add(itemReload);
@@ -206,6 +216,11 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		} else {
 			return new DefaultMutableTreeNode(pathInfo);
 		}
+	}
+	
+	public void changeMusicLibrary(MusicLibrary musicLib){
+		DefaultMutableTreeNode topNode = buildFileTree(musicLib.getRootDirectory());
+		fileTree.setModel(new DefaultTreeModel(topNode));
 	}
 
 
