@@ -232,11 +232,13 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		JLabel titleLabel = new JLabel("<html><b>Title</b></html>");
 		textDetailPanel.add(titleLabel, textDetailConstraints);
 		titleField = new JTextField(25);
+		titleField.setEnabled(false);
 		textDetailPanel.add(titleField, textDetailConstraintsFill);
 		
 		JLabel albumLabel = new JLabel("<html><b>Album</b></html>");
 		textDetailPanel.add(albumLabel, textDetailConstraints);
 		albumField = new JTextField(25);
+		albumField.setEnabled(false);
 		textDetailPanel.add(albumField, textDetailConstraintsFill);
 		
 		textDetailConstraints.gridy = 2;
@@ -245,6 +247,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		JLabel yearLabel = new JLabel("<html><b>Year</b></html>");
 		textDetailPanel.add(yearLabel, textDetailConstraints);
 		yearField = new JTextField(25);
+		yearField.setEnabled(false);
 		yearField.setDocument(new PlainDocument(){
 			private static final long serialVersionUID = -1004617962388265479L;
 
@@ -267,6 +270,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		JLabel artistLabel = new JLabel("<html><b>Artist</b></html>");
 		textDetailPanel.add(artistLabel, textDetailConstraints);
 		artistField = new JTextField(25);
+		artistField.setEnabled(false);
 		textDetailPanel.add(artistField, textDetailConstraintsFill);
 		
 		detailPanel.add(textDetailPanel, BorderLayout.NORTH);

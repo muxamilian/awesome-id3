@@ -1,6 +1,7 @@
 package awesome;
 
 import java.awt.EventQueue;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
@@ -28,7 +29,11 @@ public class AwesomeID3 {
 		controller = new AwesomeID3();
 		//for mac os x menu bar
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
-		controller.chooseMusicLibrary(); //ask the user for music directory
+		if(args.length > 0 && new File(args[0]).exists())
+			controller.loadMusicLibrary(new File(args[0]));
+		else
+			controller.chooseMusicLibrary(); //ask the user for music directory
+		
 		controller.initViewAndShow(); //init View
 	}
 
@@ -59,15 +64,7 @@ public class AwesomeID3 {
 					JFileChooser fileChooser = new JFileChooser();
 					fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					if (fileChooser.showOpenDialog(view) == JFileChooser.APPROVE_OPTION) { // view may be null here, no problem
-						Directory rootDir = new Directory(fileChooser.getSelectedFile());
-						try {
-							DirectoryWalker.buildFileTree(rootDir); //scan for mp3s
-						} catch (IOException e) {
-							if(view != null){
-								view.presentException(e);
-							}
-						}
-						AwesomeID3.getController().setMusicLibrary(new MusicLibrary(rootDir)); //for later access
+						loadMusicLibrary(fileChooser.getSelectedFile());
 					} else if (view != null) {
 						// nothing
 						return;
@@ -81,6 +78,18 @@ public class AwesomeID3 {
 			e.printStackTrace();
 		}
 
+	}
+	
+	private void loadMusicLibrary(File file) {
+		Directory rootDir = new Directory(file);
+		try {
+			DirectoryWalker.buildFileTree(rootDir); //scan for mp3s
+		} catch (IOException e) {
+			if(view != null){
+				view.presentException(e);
+			}
+		}
+		AwesomeID3.getController().setMusicLibrary(new MusicLibrary(rootDir)); //for later access
 	}
 
 	private void setMusicLibrary(MusicLibrary musicLib) {
