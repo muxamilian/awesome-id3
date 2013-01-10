@@ -62,9 +62,10 @@ public class MusicLibrary {
 			mp3.setArtist(elem.getElementsByTagName("artist").item(0).getNodeValue());
 			mp3.setAlbum(elem.getElementsByTagName("album").item(0).getNodeValue());
 			mp3.setYear(elem.getElementsByTagName("year").item(0).getNodeValue());
-			Node cover = elem.getElementsByTagName("cover").item(0);
-			mp3.setCover(DatatypeConverter.parseBase64Binary(cover.getNodeValue()));
-			mp3.setCoverMime(((Element) cover).getAttribute("mime"));
+			Element cover = (Element) elem.getElementsByTagName("cover").item(0);
+			mp3.setCover(DatatypeConverter.parseBase64Binary(cover.getElementsByTagName("data").item(0).getNodeValue()));
+			mp3.setCoverMime(cover.getAttribute("mimetype"));
+			mp3.setCoverDescription(cover.getElementsByTagName("description").item(0).getNodeValue());
 			return mp3;
 		} else {
 			Directory directory = new Directory(new File(elem.getAttribute("path")));
