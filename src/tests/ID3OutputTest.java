@@ -23,18 +23,25 @@ public class ID3OutputTest {
 	}
 
 	@Test
-	public void testWriteTextFrame() {
-		fail("Not yet implemented"); // TODO
+	public void testWriteTextFrame() throws IOException {
+		File tmp = File.createTempFile("id3outputtest", "bin");
+		ID3Output out = new ID3Output(tmp, false);
+		out.writeTextFrame("TPE1", "John Lennon".getBytes("ISO-8859-1"));
+		byte[] data = Files.readAllBytes(tmp.toPath());
+		assertArrayEquals(data, new byte[]{84,80,69,49,0,0,0,12,0,0,0,74,111,104,110,32,76,101,110,110,111,110});
+		out.close();
+		tmp.delete();
 	}
 
 	@Test
-	public void testWriteFrame() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	@Test
-	public void testWritePadding() {
-		fail("Not yet implemented"); // TODO
+	public void testWritePadding() throws IOException {
+		File tmp = File.createTempFile("id3outputtest", "bin");
+		ID3Output out = new ID3Output(tmp, false);
+		out.writePadding(7);
+		byte[] data = Files.readAllBytes(tmp.toPath());
+		assertArrayEquals(data, new byte[]{0,0,0,0,0,0,0});
+		out.close();
+		tmp.delete();
 	}
 
 }

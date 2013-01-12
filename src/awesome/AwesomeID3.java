@@ -68,13 +68,6 @@ public class AwesomeID3 {
 	
 	private void loadMusicLibrary(File file) {
 		Directory rootDir = new Directory(file);
-		try {
-			DirectoryWalker.buildFileTree(rootDir); //scan for mp3s
-		} catch (IOException e) {
-			if(view != null){
-				view.presentException(e);
-			}
-		}
 		AwesomeID3.getController().setMusicLibrary(new MusicLibrary(rootDir)); //for later access
 	}
 

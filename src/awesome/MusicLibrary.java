@@ -2,12 +2,14 @@ package awesome;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
+import javax.xml.xpath.*;
 
 import org.w3c.dom.*;
 
@@ -28,7 +30,17 @@ public class MusicLibrary {
 	
 	public MusicLibrary(Directory rootDir){
 		this.rootDir = rootDir;
-		this.xmlLocation = new File(rootDir.getFile(), "cache.xml");
+		this.xmlLocation = new File(rootDir.getFile(), "cache.xml");		
+		try {
+			readXML();			
+			DirectoryWalker.buildFileTree(this, rootDir); //scan for mp3s
+		} catch (Exception e) {
+			if(AwesomeID3.getController().getView() != null){
+				AwesomeID3.getController().getView().presentException(e);
+			} else {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**
@@ -44,9 +56,10 @@ public class MusicLibrary {
 	
 	DocumentBuilderFactory docFactory;
 	DocumentBuilder docBuilder;
-	Document doc;
+	Document doc = null;
 	
 	public void readXML() throws Exception {
+		if(!xmlLocation.exists()) return;
 		docFactory = DocumentBuilderFactory.newInstance();
 		docBuilder = docFactory.newDocumentBuilder();
 		doc = docBuilder.parse(xmlLocation);
@@ -58,14 +71,15 @@ public class MusicLibrary {
 		NodeList children = elem.getChildNodes();
 		if(elem.getNodeName() == "file") {
 			MP3File mp3 = new MP3File(new File(elem.getAttribute("path")));
-			mp3.setTitle(elem.getElementsByTagName("title").item(0).getNodeValue());
-			mp3.setArtist(elem.getElementsByTagName("artist").item(0).getNodeValue());
-			mp3.setAlbum(elem.getElementsByTagName("album").item(0).getNodeValue());
-			mp3.setYear(elem.getElementsByTagName("year").item(0).getNodeValue());
+			mp3.setTitle(elem.getElementsByTagName("title").item(0).getFirstChild().getNodeValue());
+			mp3.setArtist(elem.getElementsByTagName("artist").item(0).getFirstChild().getNodeValue());
+			mp3.setAlbum(elem.getElementsByTagName("album").item(0).getFirstChild().getNodeValue());
+			mp3.setYear(elem.getElementsByTagName("year").item(0).getFirstChild().getNodeValue());
 			Element cover = (Element) elem.getElementsByTagName("cover").item(0);
-			mp3.setCover(DatatypeConverter.parseBase64Binary(cover.getElementsByTagName("data").item(0).getNodeValue()));
+			//mp3.setCover(DatatypeConverter.parseBase64Binary(cover.getElementsByTagName("data").item(0).getNodeValue()));
 			mp3.setCoverMime(cover.getAttribute("mimetype"));
 			mp3.setCoverDescription(cover.getElementsByTagName("description").item(0).getNodeValue());
+			mp3.setDirty(false);
 			return mp3;
 		} else {
 			Directory directory = new Directory(new File(elem.getAttribute("path")));
@@ -76,26 +90,35 @@ public class MusicLibrary {
 		}
 	}
 	
-	public void saveXML() throws Exception {	
-		// initializiation
-		docFactory = DocumentBuilderFactory.newInstance();
-		docBuilder = docFactory.newDocumentBuilder();
+	public void saveXML(){	
+		try {
+			// initializiation
+			docFactory = DocumentBuilderFactory.newInstance();
+			docBuilder = docFactory.newDocumentBuilder();
+			
+			// root elem
+			doc = docBuilder.newDocument();
+			Element rootElement = doc.createElement("cache");
+			rootElement.setAttribute("timestamp", "" + Calendar.getInstance().getTimeInMillis());
+			doc.appendChild(rootElement);
 		
-		// root elem
-		doc = docBuilder.newDocument();
-		Element rootElement = doc.createElement("cache");
-		doc.appendChild(rootElement);
-	
-		// document elems
-		rootElement.appendChild(buildDirTree(rootDir));
-		
-		// write XML
-		TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		Transformer transformer = transformerFactory.newTransformer();
-		DOMSource source = new DOMSource(doc);
-		
-		StreamResult result =  new StreamResult(xmlLocation);
-		transformer.transform(source, result);
+			// document elems
+			rootElement.appendChild(buildDirTree(rootDir));
+			
+			// write XML
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			
+			StreamResult result =  new StreamResult(xmlLocation);
+			transformer.transform(source, result);
+		} catch(Exception ex){
+			if(AwesomeID3.getController().getView() != null){
+				AwesomeID3.getController().getView().presentException(ex);
+			} else {
+				ex.printStackTrace();
+			}
+		}
 	}
 	
 	Element buildDirTree(FilePathInfo file) {
@@ -103,6 +126,7 @@ public class MusicLibrary {
 			MP3File f = (MP3File) file;
 			Element mp3 = doc.createElement("file");
 			mp3.setAttribute("name", f.getFile().getName());
+			mp3.setAttribute("path", f.getFile().getPath());
 			Element title = doc.createElement("title");
 			title.setTextContent(f.getTitle());
 			Element artist = doc.createElement("artist");
@@ -128,7 +152,7 @@ public class MusicLibrary {
 				cover.appendChild(description);
 				Element data = doc.createElement("data");
 				data.setTextContent(DatatypeConverter.printBase64Binary(f.getCover()));
-				cover.appendChild(data);
+				//cover.appendChild(data); //TODO: REENABLE
 				mp3.appendChild(cover);
 			}
 			
@@ -145,11 +169,7 @@ public class MusicLibrary {
 	
 	public void saveAllDirtyFiles() throws IOException{
 		saveDirtyMP3s(rootDir);
-		try {
-			saveXML();
-		} catch (Exception e) {
-			AwesomeID3.getController().getView().presentException(e);
-		}
+		saveXML();
 	}
 	
 
@@ -163,6 +183,7 @@ public class MusicLibrary {
 					ID3Parser.save(mp3);
 			}
 		}
+		saveXML();
 	}
 	
 	public boolean checkDirty()
@@ -183,6 +204,19 @@ public class MusicLibrary {
 		}	
 		
 		return false;
+	}
+
+	public MP3File parseMP3FromCache(File f) throws XPathExpressionException {
+		if(doc == null) return null;
+		XPathFactory xPathfactory = XPathFactory.newInstance();
+		XPath xpath = xPathfactory.newXPath();
+		XPathExpression expr = xpath.compile("//file[@path='" + f.getPath() + "']");
+		NodeList nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+		Element e = (Element) nl.item(0);
+		if(e != null && xmlLocation.lastModified() > f.lastModified()){
+			return (MP3File) buildFromCache(e);
+		} else 
+			return null;
 	}
 }
 
