@@ -75,7 +75,7 @@ public class MusicLibrary {
 			Element cover = (Element) elem.getElementsByTagName("cover").item(0);
 			if(cover != null){
 				mp3.setCover(DatatypeConverter.parseBase64Binary(cover.getElementsByTagName("data").item(0).getTextContent()));
-				mp3.setCoverMime(cover.getAttribute("mimetype"));
+				mp3.setCoverMimeType(cover.getAttribute("mimetype"));
 				mp3.setCoverDescription(cover.getElementsByTagName("description").item(0).getNodeValue());
 			}
 			
