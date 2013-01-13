@@ -19,7 +19,6 @@ import org.w3c.dom.Document;
  * This class is used to store the current working directory and (later)
  * to encapsulate the xml-cache functions. Only one MusicLibrary should exist
  * at the same time.
- * @author me
  *
  */
 
@@ -76,9 +75,24 @@ public class MusicLibrary {
 			mp3.setAlbum(elem.getElementsByTagName("album").item(0).getFirstChild().getNodeValue());
 			mp3.setYear(elem.getElementsByTagName("year").item(0).getFirstChild().getNodeValue());
 			Element cover = (Element) elem.getElementsByTagName("cover").item(0);
-			//mp3.setCover(DatatypeConverter.parseBase64Binary(cover.getElementsByTagName("data").item(0).getNodeValue()));
-			mp3.setCoverMime(cover.getAttribute("mimetype"));
-			mp3.setCoverDescription(cover.getElementsByTagName("description").item(0).getNodeValue());
+			if(cover != null){
+				mp3.setCover(DatatypeConverter.parseBase64Binary(cover.getElementsByTagName("data").item(0).getTextContent()));
+				mp3.setCoverMime(cover.getAttribute("mimetype"));
+				mp3.setCoverDescription(cover.getElementsByTagName("description").item(0).getNodeValue());
+			}
+			
+			NodeList el = elem.getElementsByTagName("ignoredtag");
+			for(int i = 0; i < el.getLength(); i++){
+				Element itag = (Element) el.item(i);
+				String id = itag.getAttribute("frameid");
+				int size = Integer.parseInt(itag.getAttribute("size"));
+				int flags = Integer.parseInt(itag.getAttribute("flags"));
+				byte[] data = DatatypeConverter.parseBase64Binary(itag.getTextContent());
+				ID3Frame frame = new ID3Frame(id, size, flags, data);
+				mp3.addUnknownFrame(frame);
+			}
+			
+			mp3.setTagSize(Integer.parseInt(elem.getAttribute("tagsize")));
 			mp3.setDirty(false);
 			return mp3;
 		} else {
@@ -111,6 +125,7 @@ public class MusicLibrary {
 			DOMSource source = new DOMSource(doc);
 			
 			StreamResult result =  new StreamResult(xmlLocation);
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.transform(source, result);
 		} catch(Exception ex){
 			if(AwesomeID3.getController().getView() != null){
@@ -127,6 +142,7 @@ public class MusicLibrary {
 			Element mp3 = doc.createElement("file");
 			mp3.setAttribute("name", f.getFile().getName());
 			mp3.setAttribute("path", f.getFile().getPath());
+			mp3.setAttribute("tagsize", "" + f.getTagSize());
 			Element title = doc.createElement("title");
 			title.setTextContent(f.getTitle());
 			Element artist = doc.createElement("artist");
@@ -152,8 +168,17 @@ public class MusicLibrary {
 				cover.appendChild(description);
 				Element data = doc.createElement("data");
 				data.setTextContent(DatatypeConverter.printBase64Binary(f.getCover()));
-				//cover.appendChild(data); //TODO: REENABLE
+				cover.appendChild(data); //TODO: REENABLE
 				mp3.appendChild(cover);
+			}
+			
+			for(ID3Frame fr : f.getUnknownFrames()){
+				Element frame = doc.createElement("ignoredtag");
+				frame.setAttribute("frameid", fr.getId());
+				frame.setAttribute("size", "" + fr.getSize());
+				frame.setAttribute("flags", "" + fr.getFlags());
+				frame.setTextContent(DatatypeConverter.printBase64Binary(fr.getData()));
+				mp3.appendChild(frame);
 			}
 			
 			return mp3;
