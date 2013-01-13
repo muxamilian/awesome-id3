@@ -85,6 +85,8 @@ public class AwesomeID3 {
 				}
 			}
 		}
+		if(!musicLib.cacheExists())
+			musicLib.saveXML();
 		System.exit(0);
 	}
 

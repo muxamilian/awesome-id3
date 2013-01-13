@@ -48,6 +48,10 @@ public class MusicLibrary {
 		}
 	}
 	
+	public boolean cacheExists(){
+		return xmlLocation.exists();
+	}
+	
 	/**
 	 * @return the rootDir
 	 */

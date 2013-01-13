@@ -89,7 +89,7 @@ public class ID3Parser {
 			case "TIT2" : mp3.setTitle(input.readStringOfLengthWithCharsetByte(fsize)); break;
 			case "TPE1" : mp3.setArtist(input.readStringOfLengthWithCharsetByte(fsize)); break; //check whether TPE2 is correct
 			case "TYER" : mp3.setYear(input.readStringOfLengthWithCharsetByte(fsize)); break;
-			case "APIC" : parsePic(mp3, input, fsize); break;
+			case "APIC" : parsePic(mp3, input, fsize, flags); break;
 			default: readUnknownFrame(mp3, input, frameType, fsize, flags);
 			break;
 		}
@@ -101,17 +101,22 @@ public class ID3Parser {
 		mp3.addUnknownFrame(new ID3Frame(frameType, fsize, flags, buff2)); //we need to restore the frame later
 	}
 
-	private static void parsePic(MP3File mp3, ID3InputStream input, int fsize) throws FileNotFoundException, IOException {
+	private static void parsePic(MP3File mp3, ID3InputStream input, int fsize, int flags) throws FileNotFoundException, IOException {
+		input.mark(fsize+1);
 		Charset cs = input.readCharset(); //1. charset byte
-		mp3.setCoverMimeType(input.readStringUntilZero(cs)); //2. mime string (zero-terminated)
+		String mime = input.readStringUntilZero(cs); //2. mime string (zero-terminated)
 		int picType = input.readUnsignedByte(); // 3. byte indicating kind of picture, e.g. front cover
-		if(picType != 0x03) //we want only front covers
-			return;
-		String desc = input.readStringUntilZero(cs); //read image description
-		mp3.setCoverDescription(desc);
+		String desc = input.readStringUntilZero(cs); //read image description		
 		byte buff[] = new byte[fsize-1-mp3.getCoverMimeType().length()-1-1-desc.length()-1]; //image is rest of the data
 		input.read(buff);
 		input.readPadding(); //image can be followed by zero bytes used to make modifications easier
+		if(picType != 0x03){ //we want only front covers
+			input.reset();
+			readUnknownFrame(mp3, input, "APIC", fsize, flags);
+			return;
+		}
+		mp3.setCoverMimeType(mime);
+		mp3.setCoverDescription(desc);
 		mp3.setCover(buff);
 	}
 	
