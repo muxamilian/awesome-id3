@@ -25,8 +25,14 @@ import org.w3c.dom.Document;
 public class MusicLibrary {
 	private Directory rootDir;
 	private File xmlLocation;
+	private DocumentBuilderFactory docFactory;
+	private DocumentBuilder docBuilder;
+	private Document doc = null;
 	
-	
+	/**
+	 * this constructor reads the cache (if one exists) and builds the directory tree.
+	 * @param rootDir
+	 */
 	public MusicLibrary(Directory rootDir){
 		this.rootDir = rootDir;
 		this.xmlLocation = new File(rootDir.getFile(), "cache.xml");		
@@ -49,15 +55,7 @@ public class MusicLibrary {
 		return rootDir;
 	}
 	
-	public boolean isCacheCurrent() {
-		return xmlLocation.lastModified() >= rootDir.getFile().lastModified();
-	}
-	
-	DocumentBuilderFactory docFactory;
-	DocumentBuilder docBuilder;
-	Document doc = null;
-	
-	public void readXML() throws Exception {
+	private void readXML() throws Exception {		
 		if(!xmlLocation.exists()) return;
 		docFactory = DocumentBuilderFactory.newInstance();
 		docBuilder = docFactory.newDocumentBuilder();
@@ -66,7 +64,7 @@ public class MusicLibrary {
 		// Todo call buildFromCache on the root diretory tag and replace the music lib with the value
 	}
 	
-	FilePathInfo buildFromCache(Element elem) {
+	private FilePathInfo buildFromCache(Element elem) {
 		NodeList children = elem.getChildNodes();
 		if(elem.getNodeName() == "file") {
 			MP3File mp3 = new MP3File(new File(elem.getAttribute("path")));
@@ -104,6 +102,10 @@ public class MusicLibrary {
 		}
 	}
 	
+	/**
+	 * writes the cache for all files stored in the library.
+	 */
+	
 	public void saveXML(){	
 		try {
 			// initializiation
@@ -136,7 +138,7 @@ public class MusicLibrary {
 		}
 	}
 	
-	Element buildDirTree(FilePathInfo file) {
+	private Element buildDirTree(FilePathInfo file) {
 		if(file instanceof MP3File) {
 			MP3File f = (MP3File) file;
 			Element mp3 = doc.createElement("file");
@@ -192,6 +194,11 @@ public class MusicLibrary {
 		}
 	}
 	
+	/**
+	 * saves the ID3Tags of all dirty files and rewrites the cache.
+	 * @throws IOException
+	 */
+	
 	public void saveAllDirtyFiles() throws IOException{
 		saveDirtyMP3s(rootDir);
 		saveXML();
@@ -210,6 +217,11 @@ public class MusicLibrary {
 		}
 		saveXML();
 	}
+	
+	/**
+	 * determines whether at least one file in the library is dirty.
+	 * @return
+	 */
 	
 	public boolean checkDirty()
 	{		
@@ -230,6 +242,14 @@ public class MusicLibrary {
 		
 		return false;
 	}
+	
+	/**
+	 * reads the data of an mp3 file from the cache if a cache exists and has an entry for the given file.
+	 * Otherwise it returns null.
+	 * @param f 
+	 * @return MP3File with data from cache or null.
+	 * @throws XPathExpressionException
+	 */
 
 	public MP3File parseMP3FromCache(File f) throws XPathExpressionException {
 		if(doc == null) return null;
