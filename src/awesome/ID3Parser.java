@@ -73,18 +73,15 @@ public class ID3Parser {
 		} catch ( IOException e) {
 			AwesomeID3.getController().getView().presentException(e);
 		}
-		byte[] rightBytes = ID3_HEADER_START;
-		return Arrays.equals(isRightID3,rightBytes);
+		return Arrays.equals(isRightID3, ID3_HEADER_START);
 	}
 	
 	private static void parseFrame(MP3File mp3, ID3InputStream input) throws IOException {
 		String frameType = input.readStringOfLength(4);
-		//System.out.println("Frame Type: " + frameType);
 		int fsize = input.readInt();
-		//System.out.println("Frame Size: " + fsize);
 		int flags = input.readUnsignedShort();
 		if(flags != 0) {
-			input.skip(fsize);
+			readUnknownFrame(mp3, input, frameType, fsize, flags); //we want to ignore frames with flags, but store them for rewrite
 			return;
 		}
 		switch (frameType) { //the frame type indicates which info we read
@@ -93,12 +90,17 @@ public class ID3Parser {
 			case "TPE1" : mp3.setArtist(input.readStringOfLengthWithCharsetByte(fsize)); break; //check whether TPE2 is correct
 			case "TYER" : mp3.setYear(input.readStringOfLengthWithCharsetByte(fsize)); break;
 			case "APIC" : parsePic(mp3, input, fsize); break;
-			default: byte[] buff2  = new byte[fsize]; input.read(buff2); 
-			mp3.addUnknownFrame(new ID3Frame(frameType, fsize, flags, buff2)); //we need to restore the frame later
+			default: readUnknownFrame(mp3, input, frameType, fsize, flags);
 			break;
 		}
 	}
 	
+	private static void readUnknownFrame(MP3File mp3, ID3InputStream input, String frameType, int fsize, int flags) throws IOException {
+		byte[] buff2  = new byte[fsize]; 
+		input.read(buff2); 
+		mp3.addUnknownFrame(new ID3Frame(frameType, fsize, flags, buff2)); //we need to restore the frame later
+	}
+
 	private static void parsePic(MP3File mp3, ID3InputStream input, int fsize) throws FileNotFoundException, IOException {
 		Charset cs = input.readCharset(); //1. charset byte
 		mp3.setCoverMimeType(input.readStringUntilZero(cs)); //2. mime string (zero-terminated)
