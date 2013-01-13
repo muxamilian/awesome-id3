@@ -1,5 +1,9 @@
 package tests;
 
+import java.io.File;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JTextField;
@@ -10,6 +14,7 @@ import junit.extensions.jfcunit.eventdata.MouseEventData;
 import junit.extensions.jfcunit.eventdata.StringEventData;
 import junit.extensions.jfcunit.finder.*;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,14 +24,21 @@ import awesome.ID3View;
 public class GUITest extends JFCTestCase{
 	
 	private ID3View view;
+	private final String directory = "/Users/me/Music/mp3s";
 
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 		setHelper( new JFCTestHelper( ) );
-		AwesomeID3.main(new String[]{"/Users/me/Music/mp3s"});
+		AwesomeID3.main(new String[]{directory});
 		view = AwesomeID3.getController().getView();
 	}
+	
+	/*@After
+	public void tearDown() throws Exception{
+		super.tearDown();
+
+	}*/
 
 	@Test
 	public void testDisabledTextFieldsOnStartup() {
@@ -98,5 +110,53 @@ public class GUITest extends JFCTestCase{
 		getHelper().enterClickAndLeave(new MouseEventData( this, delitem ));
 		assertNull(cc.getIcon());
 	}
-
+	
+	@Test
+	public void testDirtyDialogYes() throws InterruptedException {
+		assertNotNull(view);
+		Thread t = new Thread(){
+			@Override
+			public void run() {
+				assertTrue(view.askUserForDirtyFiles());
+			}
+		};
+		t.start();
+		
+		DialogFinder dFinder = new DialogFinder("Save Files");
+		JDialog dialog = (JDialog) dFinder.find();
+		JButton enterButton = (JButton) TestHelper.findComponent(JButton.class, dialog, 0);
+		getHelper().enterClickAndLeave(new MouseEventData(this, enterButton));
+		t.join();
+	}
+	
+	@Test
+	public void testDirtyDialogNo() throws InterruptedException {
+		assertNotNull(view);
+		Thread t = new Thread(){
+			@Override
+			public void run() {
+				assertFalse(view.askUserForDirtyFiles());
+			}
+		};
+		t.start();
+		DialogFinder dFinder = new DialogFinder("Save Files");
+		JDialog dialog = (JDialog) dFinder.find();
+		JButton cancelButton = (JButton) TestHelper.findComponent(JButton.class, dialog, 1);
+		getHelper().enterClickAndLeave(new MouseEventData(this, cancelButton));
+		t.join();
+	}
+	
+	/**@Test //does not work on mac os x as menu bar does not belong to window in Aqua.
+	public void testSaveChangesCacheCreation() throws InterruptedException{
+		assertNotNull(view);
+		File cache = new File(directory, "cache.xml");
+		cache.delete();
+		assertFalse(cache.exists());
+		getHelper().enterClickAndLeave(new MouseEventData(this, view.getJMenuBar().getMenu(0)));
+		JMenuItem saveitem = (JMenuItem) view.getJMenuBar().getMenu(0).getItem(0);		
+		assertNotNull(saveitem);
+		getHelper().enterClickAndLeave(new MouseEventData(this, saveitem));
+		Thread.sleep(3000);
+		assertTrue(cache.exists());
+	}*/
 }
