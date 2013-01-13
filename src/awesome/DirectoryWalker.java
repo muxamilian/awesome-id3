@@ -23,7 +23,7 @@ public class DirectoryWalker {
 	 * @throws XPathExpressionException 
 	 */
 	
-	public static void buildFileTree(MusicLibrary library, Directory rootDir) throws Exception{
+	public static void buildFileTree(MusicLibrary library, Directory rootDir) throws IOException, XPathExpressionException{
 		File[] contents = rootDir.getFile().listFiles();
 		for(File f : contents){
 			if(f.isDirectory()){
@@ -35,9 +35,15 @@ public class DirectoryWalker {
 				MP3File mp3 = library.parseMP3FromCache(f);
 				if(mp3 == null) {
 					mp3 = new MP3File(f);
-					ID3Parser.parseID3(mp3);
-				} else
+					try {
+						ID3Parser.parseID3(mp3);
+					} catch (IncompatibleID3Exception e) {
+						System.out.println("Skipping File " + f.getName() + " because: " + e.getMessage());
+						continue;
+					}
+				} else {
 					System.out.println("Parsed from Cache: " + f);
+				}
 				rootDir.addChild(mp3);
 			}
 		}

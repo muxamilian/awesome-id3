@@ -25,21 +25,24 @@ public class ID3Parser {
 	 * @throws IOException
 	 */
 	
-	public static void parseID3(MP3File mp3) throws IOException{
+	public static void parseID3(MP3File mp3) throws IOException, IncompatibleID3Exception{
 		ID3InputStream input = new ID3InputStream(new FileInputStream(mp3.getFile()));
 		
 		byte[] hstart = new byte[5];
 		input.read(hstart);
 		if(!Arrays.equals(hstart, ID3_HEADER_START)){
-			System.err.println("Unable to find ID3v2.3 Header!");
-			return; //TODO: maybe we should throw an exception here as MP3File already checked for header.
+			throw new IncompatibleID3Exception("File does not start with magic bytes!");
 		}
 		
 		mp3.setHeaderFlags(input.readUnsignedByte());
+		if(mp3.getHeaderFlags() != 0)
+			throw new IncompatibleID3Exception("File has non-zero header!");
 		//TODO: Don't touch files which have flags set
 		mp3.setTagSize(input.readSyncSafeSize());
 		//Extended Header
-		byte[] tag = new byte[mp3.getTagSize()];
+		if(mp3.getFile().length() < mp3.getTagSize())
+			throw new IncompatibleID3Exception("File is shorter than its tag size!");
+		byte[] tag = new byte[mp3.getTagSize()];		
 		input.read(tag);
 		input.close();
 		input = new ID3InputStream(new ByteArrayInputStream(tag));
@@ -80,6 +83,10 @@ public class ID3Parser {
 		int fsize = input.readInt();
 		//System.out.println("Frame Size: " + fsize);
 		int flags = input.readUnsignedShort();
+		if(flags != 0) {
+			input.skip(fsize);
+			return;
+		}
 		switch (frameType) { //the frame type indicates which info we read
 			case "TALB" : mp3.setAlbum(input.readStringOfLengthWithCharsetByte(fsize)); break;
 			case "TIT2" : mp3.setTitle(input.readStringOfLengthWithCharsetByte(fsize)); break;

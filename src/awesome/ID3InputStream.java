@@ -117,5 +117,4 @@ public class ID3InputStream extends DataInputStream {
 			}
 		}
 	}
-
 }
