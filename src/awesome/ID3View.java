@@ -168,6 +168,14 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 			
 		});
 		
+		itemReload.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AwesomeID3.getController().reloadMusicLibrary();
+			}
+		});
+		
 		menuMain.add(itemSave);
 		menuMain.addSeparator();
 		menuMain.add(itemReload);

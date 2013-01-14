@@ -66,6 +66,10 @@ public class AwesomeID3 {
 		}
 	}
 	
+	public void reloadMusicLibrary(){
+		loadMusicLibrary(musicLib.getRootDirectory().getFile());
+	}
+	
 	private void loadMusicLibrary(File file) {
 		Directory rootDir = new Directory(file);
 		AwesomeID3.getController().setMusicLibrary(new MusicLibrary(rootDir)); //for later access
