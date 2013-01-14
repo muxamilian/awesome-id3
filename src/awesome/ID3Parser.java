@@ -14,6 +14,12 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
+/**
+ * This class contains all the static methods which implement the identification, parsing and writing 
+ * of id3 tags in mp3 files. It does NOT handle the cache features.
+ *
+ */
+
 public class ID3Parser {
 	
 	public static final byte[] ID3_HEADER_START = {0x49,0x44,0x33,0x03,0x00};
@@ -106,15 +112,15 @@ public class ID3Parser {
 		Charset cs = input.readCharset(); //1. charset byte
 		String mime = input.readStringUntilZero(cs); //2. mime string (zero-terminated)
 		int picType = input.readUnsignedByte(); // 3. byte indicating kind of picture, e.g. front cover
-		String desc = input.readStringUntilZero(cs); //read image description		
-		byte buff[] = new byte[fsize-1-mp3.getCoverMimeType().length()-1-1-desc.length()-1]; //image is rest of the data
-		input.read(buff);
-		input.readPadding(); //image can be followed by zero bytes used to make modifications easier
 		if(picType != 0x03){ //we want only front covers
 			input.reset();
 			readUnknownFrame(mp3, input, "APIC", fsize, flags);
 			return;
 		}
+		String desc = input.readStringUntilZero(cs); //read image description		
+		byte buff[] = new byte[fsize-1-mp3.getCoverMimeType().length()-1-1-desc.length()-1]; //image is rest of the data
+		input.read(buff);
+		input.readPadding(); //image can be followed by zero bytes used to make modifications easier		
 		mp3.setCoverMimeType(mime);
 		mp3.setCoverDescription(desc);
 		mp3.setCover(buff);
