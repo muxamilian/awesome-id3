@@ -14,7 +14,6 @@ import junit.extensions.jfcunit.eventdata.MouseEventData;
 import junit.extensions.jfcunit.eventdata.StringEventData;
 import junit.extensions.jfcunit.finder.*;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -124,7 +123,7 @@ public class GUITest extends JFCTestCase{
 		
 		DialogFinder dFinder = new DialogFinder("Save Files");
 		JDialog dialog = (JDialog) dFinder.find();
-		JButton enterButton = (JButton) TestHelper.findComponent(JButton.class, dialog, 0);
+		JButton enterButton = (JButton) new ComponentFinder(JButton.class).find(dialog, 0);
 		getHelper().enterClickAndLeave(new MouseEventData(this, enterButton));
 		t.join();
 	}
@@ -141,13 +140,16 @@ public class GUITest extends JFCTestCase{
 		t.start();
 		DialogFinder dFinder = new DialogFinder("Save Files");
 		JDialog dialog = (JDialog) dFinder.find();
-		JButton cancelButton = (JButton) TestHelper.findComponent(JButton.class, dialog, 1);
+		JButton cancelButton = (JButton) new ComponentFinder(JButton.class).find(dialog, 1);
 		getHelper().enterClickAndLeave(new MouseEventData(this, cancelButton));
 		t.join();
 	}
 	
-	/**@Test //does not work on mac os x as menu bar does not belong to window in Aqua.
+	@Test //does not work on mac os x as menu bar does not belong to window in Aqua.
 	public void testSaveChangesCacheCreation() throws InterruptedException{
+		if(System.getProperty("os.name").indexOf("Mac") > -1)
+			return;
+		
 		assertNotNull(view);
 		File cache = new File(directory, "cache.xml");
 		cache.delete();
@@ -158,5 +160,5 @@ public class GUITest extends JFCTestCase{
 		getHelper().enterClickAndLeave(new MouseEventData(this, saveitem));
 		Thread.sleep(3000);
 		assertTrue(cache.exists());
-	}*/
+	}
 }
