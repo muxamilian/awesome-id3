@@ -222,7 +222,6 @@ public class MusicLibrary {
 					ID3Parser.save(mp3);
 			}
 		}
-		saveXML();
 	}
 	
 	/**

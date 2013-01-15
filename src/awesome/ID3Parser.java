@@ -184,7 +184,7 @@ public class ID3Parser {
 		}
 		newTagSize += 40 + titleData.length + albumData.length + artistData.length + yearData.length;
 		
-		boolean writeCover = mp3.getCover() != null;
+		boolean writeCover = mp3.getCover() != null && mp3.getCoverMimeType() != null;
 		
 		if(writeCover)
 			newTagSize += 10 + 3 + mp3.getCover().length + mp3.getCoverMimeType().getBytes(cs).length + mp3.getCoverDescription().getBytes(cs).length;
