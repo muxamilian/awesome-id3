@@ -69,8 +69,6 @@ public class MusicLibrary {
 		docFactory = DocumentBuilderFactory.newInstance();
 		docBuilder = docFactory.newDocumentBuilder();
 		doc = docBuilder.parse(xmlLocation);
-		
-		// Todo call buildFromCache on the root diretory tag and replace the music lib with the value
 	}
 	
 	private FilePathInfo buildFromCache(Element elem){
