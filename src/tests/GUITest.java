@@ -23,13 +23,12 @@ import awesome.ID3View;
 public class GUITest extends JFCTestCase{
 	
 	private ID3View view;
-	private final String directory = "/Users/me/Music/mp3s";
 
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 		setHelper( new JFCTestHelper( ) );
-		AwesomeID3.main(new String[]{directory});
+		AwesomeID3.main(new String[]{TestSuite.EXAMPLE_MUSIC_DIR});
 		view = AwesomeID3.getController().getView();
 	}
 	
@@ -151,7 +150,7 @@ public class GUITest extends JFCTestCase{
 			return;
 		
 		assertNotNull(view);
-		File cache = new File(directory, "cache.xml");
+		File cache = new File(TestSuite.EXAMPLE_MUSIC_DIR, "cache.xml");
 		cache.delete();
 		assertFalse(cache.exists());
 		getHelper().enterClickAndLeave(new MouseEventData(this, view.getJMenuBar().getMenu(0)));

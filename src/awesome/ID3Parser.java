@@ -189,10 +189,8 @@ public class ID3Parser {
 		boolean writeCover = mp3.getCover() != null && mp3.getCoverMimeType() != null;
 		
 		if(writeCover){
-			System.out.println(mp3.getCover().length);
 			newTagSize += 10 + 3 + mp3.getCover().length;
 			newTagSize += mp3.getCoverMimeType().getBytes(cs).length; 
-			System.out.println("'" + mp3.getCoverDescription() + "'");
 			newTagSize += mp3.getCoverDescription().getBytes(cs).length;
 		}
 		boolean rewrite = newTagSize > mp3.getTagSize(); //did the tag segment grow?

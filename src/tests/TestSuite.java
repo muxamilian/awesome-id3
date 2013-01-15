@@ -11,5 +11,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({GUITest.class, ID3OutputTest.class, ID3InputStreamTest.class, ImageFileFilterTest.class})
 
 public class TestSuite {
-	//nothing needed here
+	/**
+	 * the directory with example files, should be reconfigured for every system.
+	 */
+	public final static String EXAMPLE_MUSIC_DIR = "/Users/me/Music/mp3s";
 }
