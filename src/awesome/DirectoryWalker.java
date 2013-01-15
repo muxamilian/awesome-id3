@@ -9,7 +9,9 @@ import java.io.IOException;
 import javax.xml.xpath.XPathExpressionException;
 
 /**
- * @author me
+ * The static DirectoryWalker offers only one method to walk recursively through
+ * a given directory an scan for mp3 files. if mp3 are found, they are parsed through cache,
+ * or if no cache entry exists, by parsing the id3 tag directly.
  *
  */
 public class DirectoryWalker {
