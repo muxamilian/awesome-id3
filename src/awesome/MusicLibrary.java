@@ -58,6 +58,17 @@ public class MusicLibrary {
 	}
 	
 	/**
+	 * deletes the cache in order to prepare a rebuild.
+	 */
+	
+	public void deleteCache(){
+		if(cacheExists()){
+			xmlLocation.delete();
+			doc = null;
+		}
+	}
+	
+	/**
 	 * @return the rootDir
 	 */
 	public Directory getRootDirectory() {

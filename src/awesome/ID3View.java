@@ -181,11 +181,12 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 			
 		});
 		
+		itemReload.setToolTipText("Hold alt-key to delete cache on reload");
 		itemReload.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AwesomeID3.getController().reloadMusicLibrary();
+				AwesomeID3.getController().reloadMusicLibrary((e.getModifiers() & ActionEvent.ALT_MASK) > 0);
 			}
 		});
 		

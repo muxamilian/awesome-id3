@@ -66,7 +66,14 @@ public class AwesomeID3 {
 		}
 	}
 	
-	public void reloadMusicLibrary(){
+	/**
+	 * inits a reload of the music library.
+	 * @param deleteCache shall the cache file deleted?
+	 */
+	
+	public void reloadMusicLibrary(boolean deleteCache){
+		if(deleteCache)
+			musicLib.deleteCache();
 		loadMusicLibrary(musicLib.getRootDirectory().getFile());
 	}
 	
