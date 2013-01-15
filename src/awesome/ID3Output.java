@@ -38,13 +38,13 @@ public class ID3Output extends RandomAccessFile {
 	
 	public void writeCover(byte[] cover, String coverMime, String coverDesc) throws UnsupportedEncodingException, IOException {
 		write("APIC".getBytes("ASCII"));
-		writeInt(cover.length+4+coverMime.getBytes("ISO-8859-1").length); // write size of frame
+		writeInt(cover.length+4+coverMime.getBytes("UTF-8").length); // write size of frame
 		writeByte(0); //flag byte 1
 		writeByte(0); //flag byte 2
-		writeByte(0); //charset
-		write(coverMime.getBytes("ISO-8859-1")); //mime type, e.g. image/jpeg
+		writeByte(3); //charset
+		write(coverMime.getBytes("UTF-8")); //mime type, e.g. image/jpeg
 		write(new byte[]{0,3}); // null-terminated string, 3 = cover, 0 = description (null-terminated)
-		write(coverDesc.getBytes("ISO-8859-1"));
+		write(coverDesc.getBytes("UTF-8"));
 		writeByte(0);
 		write(cover); // write image data
 	}
@@ -61,7 +61,7 @@ public class ID3Output extends RandomAccessFile {
 		write(id.getBytes("ASCII")); //write frame identifier
 		writeInt(titleData.length+1); //write size of frame
 		writeShort(0); //flags
-		writeByte(0); //charset = ISO-8859-1
+		writeByte(3); //charset = UTF-8
 		write(titleData); //write text data
 	}
 	

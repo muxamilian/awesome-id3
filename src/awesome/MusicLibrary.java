@@ -267,7 +267,7 @@ public class MusicLibrary {
 		Element e = (Element) nl.item(0);
 		if(e != null && xmlLocation.lastModified() > f.lastModified()){
 			return (MP3File) buildFromCache(e);
-		} else 
+		} else
 			return null;
 	}
 }

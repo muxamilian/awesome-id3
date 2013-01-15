@@ -169,7 +169,7 @@ public class ID3Parser {
 		if(!mp3.isDirty()) return; //if nothing changed, we don't need to save anything
 		
 		//we always use ISO-8859-1 as it is the ID3 standard encoding
-		Charset cs = Charset.forName("ISO-8859-1");
+		Charset cs = Charset.forName("UTF-8");
 		
 		//convert strings to byte arrays so that the length can be determined
 		byte[] titleData = mp3.getTitle().getBytes(cs);
