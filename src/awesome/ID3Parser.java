@@ -84,13 +84,13 @@ public class ID3Parser {
 		return Arrays.equals(isRightID3, ID3_HEADER_START);
 	}
 	
-	private static void parseFrame(MP3File mp3, ID3InputStream input) throws IOException {
+	private static void parseFrame(MP3File mp3, ID3InputStream input) throws IOException, IncompatibleID3Exception {
 		String frameType = input.readStringOfLength(4);
 		int fsize = input.readInt();
 		int flags = input.readUnsignedShort();
 		if(flags != 0) {
-			readUnknownFrame(mp3, input, frameType, fsize, flags); //we want to ignore frames with flags, but store them for rewrite
-			return;
+			throw new IncompatibleID3Exception("Frame Header has tags set!");
+			//readUnknownFrame(mp3, input, frameType, fsize, flags); //we want to ignore frames with flags, but store them for rewrite
 		}
 		switch (frameType) { //the frame type indicates which info we read
 			case "TALB" : mp3.setAlbum(input.readStringOfLengthWithCharsetByte(fsize)); break;
