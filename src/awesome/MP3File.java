@@ -4,6 +4,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is a bean used to store all information which belong
+ * to a single mp3, including all read id3 info.
+ *
+ */
+
 public class MP3File implements FilePathInfo {
 	
 	private File file;
@@ -83,6 +89,10 @@ public class MP3File implements FilePathInfo {
 	public String getCoverMimeType() {
 		return coverMimeType;
 	}
+	
+	/**
+	 * returns the represented file.
+	 */
 	
 	@Override
 	public File getFile() {
@@ -245,10 +255,13 @@ public class MP3File implements FilePathInfo {
 		dirty |= !(year.equals(this.year));
 		this.year = year;
 	}
-
+	
+	/**
+	 * returns the file name.
+	 */
+	
 	@Override
 	public String toString() {
 		return file.getName();
 	}
-	
 }

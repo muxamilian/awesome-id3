@@ -48,6 +48,11 @@ public class MusicLibrary {
 		}
 	}
 	
+	/**
+	 * determines whether a cache file already exists.
+	 * @return
+	 */
+	
 	public boolean cacheExists(){
 		return xmlLocation.exists();
 	}
@@ -68,7 +73,7 @@ public class MusicLibrary {
 		// Todo call buildFromCache on the root diretory tag and replace the music lib with the value
 	}
 	
-	private FilePathInfo buildFromCache(Element elem) {
+	private FilePathInfo buildFromCache(Element elem){
 		NodeList children = elem.getChildNodes();
 		if(elem.getNodeName() == "file") {
 			MP3File mp3 = new MP3File(new File(elem.getAttribute("path")));
@@ -171,10 +176,10 @@ public class MusicLibrary {
 				cover.appendChild(mimetype);
 				Element description = doc.createElement("description");
 				description.setTextContent(f.getCoverDescription());
-				cover.appendChild(description);
+				cover.appendChild(description);				
 				Element data = doc.createElement("data");
 				data.setTextContent(DatatypeConverter.printBase64Binary(f.getCover()));
-				cover.appendChild(data); //TODO: REENABLE
+				cover.appendChild(data);
 				mp3.appendChild(cover);
 			}
 			
@@ -253,9 +258,10 @@ public class MusicLibrary {
 	 * @param f 
 	 * @return MP3File with data from cache or null.
 	 * @throws XPathExpressionException
+	 * @throws IOException 
 	 */
 
-	public MP3File parseMP3FromCache(File f) throws XPathExpressionException {
+	public MP3File parseMP3FromCache(File f) throws XPathExpressionException{
 		if(doc == null) return null;
 		XPathFactory xPathfactory = XPathFactory.newInstance();
 		XPath xpath = xPathfactory.newXPath();

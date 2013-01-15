@@ -22,6 +22,9 @@ import javax.imageio.ImageIO;
 
 public class ID3Parser {
 	
+	/**
+	 * This field contains 5 bytes which have to match the first 5 bytes of every mp3 file with id3v2.3 tag.
+	 */
 	public static final byte[] ID3_HEADER_START = {0x49,0x44,0x33,0x03,0x00};
 	
 	/**
@@ -43,7 +46,6 @@ public class ID3Parser {
 		mp3.setHeaderFlags(input.readUnsignedByte());
 		if(mp3.getHeaderFlags() != 0)
 			throw new IncompatibleID3Exception("File has non-zero header!");
-		//TODO: Don't touch files which have flags set
 		mp3.setTagSize(input.readSyncSafeSize());
 		//Extended Header
 		if(mp3.getFile().length() < mp3.getTagSize())
@@ -61,7 +63,7 @@ public class ID3Parser {
 	}
 	
 	/**
-	 * checks whether a given File is a MP3 with ID3v2 tags or not.
+	 * checks whether a given File is a MP3 with ID3v2 tags or not, including magic byte test.
 	 * @param f
 	 * @return
 	 */
@@ -134,7 +136,6 @@ public class ID3Parser {
 	 */
 	
 	public static void readCoverFromFile(MP3File mp3, File file) {
-		//TODO: Add conversion for other image formats like BMP, TIFF, etc
 		try {
 			byte[] buff;
 			if(!AllImagesFileFilter.isPNGorJPEG(file)) {

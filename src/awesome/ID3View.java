@@ -19,6 +19,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.awt.event.*;
 
+/**
+ * This class represents the main window of the application.
+ *
+ */
+
 public class ID3View extends JFrame implements TreeSelectionListener, TreeExpansionListener  {
 	
 	private static final long serialVersionUID = 3797307884995261587L;
@@ -34,11 +39,14 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 	
 	private JPopupMenu coverMenu;
 	
+	/**
+	 * this default constructor inits the frame, but doesn't set visibility.
+	 */
+	
 	public ID3View() {
 		setSize(700, 500);
 		setTitle("Awesome ID3");
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); 
-		//TODO: Change to ID3Controller.exitApplication()
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				MP3File mp3 = getSelectedMP3();
@@ -56,6 +64,11 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		createDetailForm();
 		createCoverMenu();
 	}
+	
+	/**
+	 * asks the user whether he wants to save the files he changed.
+	 * @return
+	 */
 		
 	public boolean askUserForDirtyFiles() { 
 	      int result = JOptionPane.showConfirmDialog(null, 
@@ -315,6 +328,11 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		splitPane.setRightComponent(detailPanel);
 		
 	}
+	
+	/**
+	 * presents an exception to the user.
+	 * @param ex
+	 */
 	
 	public void presentException(Exception ex){
 		JOptionPane.showMessageDialog(this,

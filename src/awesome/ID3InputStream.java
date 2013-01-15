@@ -6,12 +6,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-public class ID3InputStream extends DataInputStream {
+/**
+ * This class adds some id3 utility methods to the underlying inputstream.
+ * @author me
+ *
+ */
 
-	public ID3InputStream(InputStream arg0) {
-		super(arg0);
-	}
+public class ID3InputStream extends DataInputStream {
 	
+	/**
+	 * simply calls super(in); as no initialization is needed.
+	 * @param in
+	 */
+	public ID3InputStream(InputStream in) {
+		super(in);
+	}
+
 	/**
 	 * read a zero-terminated string with given charset.
 	 * @param cs the charset to use for decode
@@ -89,11 +99,11 @@ public class ID3InputStream extends DataInputStream {
 	public Charset readCharset() throws IOException {
 		String csName;		
 		switch(read()) {
-		case 0: csName = "ISO-8859-1"; break;
-		case 1: csName = "UTF-16"; break;
-		case 2: csName = "UTF-16BE"; break;
-		case 3: csName = "UTF-8"; break;
-		default: csName = "ISO-8859-1"; break;
+			case 0: csName = "ISO-8859-1"; break;
+			case 1: csName = "UTF-16"; break;
+			case 2: csName = "UTF-16BE"; break;
+			case 3: csName = "UTF-8"; break;
+			default: csName = "ISO-8859-1"; break;
 		}
 		return Charset.forName(csName);
 	}
