@@ -89,6 +89,8 @@ public class ID3Parser {
 		int fsize = input.readInt();
 		int flags = input.readUnsignedShort();
 		if(flags != 0) {
+			System.out.println(frameType);
+			System.out.println(fsize);
 			throw new IncompatibleID3Exception("Frame Header has tags set!");
 			//readUnknownFrame(mp3, input, frameType, fsize, flags); //we want to ignore frames with flags, but store them for rewrite
 		}
@@ -186,9 +188,13 @@ public class ID3Parser {
 		
 		boolean writeCover = mp3.getCover() != null && mp3.getCoverMimeType() != null;
 		
-		if(writeCover)
-			newTagSize += 10 + 3 + mp3.getCover().length + mp3.getCoverMimeType().getBytes(cs).length + mp3.getCoverDescription().getBytes(cs).length;
-		
+		if(writeCover){
+			System.out.println(mp3.getCover().length);
+			newTagSize += 10 + 3 + mp3.getCover().length;
+			newTagSize += mp3.getCoverMimeType().getBytes(cs).length; 
+			System.out.println("'" + mp3.getCoverDescription() + "'");
+			newTagSize += mp3.getCoverDescription().getBytes(cs).length;
+		}
 		boolean rewrite = newTagSize > mp3.getTagSize(); //did the tag segment grow?
 		
 		// read music data
@@ -209,13 +215,14 @@ public class ID3Parser {
 		dos.writeTextFrame("TALB", albumData);
 		dos.writeTextFrame("TIT2", titleData);
 		dos.writeTextFrame("TYER", yearData);
-		if(writeCover)
-			dos.writeCover(mp3.getCover(), mp3.getCoverMimeType(), mp3.getCoverDescription());
 		
 		// write all the unkown frames not modified by our software
 		for(ID3Frame frame : mp3.getUnknownFrames()){
 			dos.writeFrame(frame);
 		}
+		
+		if(writeCover)
+			dos.writeCover(mp3.getCover(), mp3.getCoverMimeType(), mp3.getCoverDescription());
 		
 		if(rewrite){
 			//tag ist finished, we can write the music data

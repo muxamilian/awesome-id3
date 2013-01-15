@@ -83,7 +83,8 @@ public class MusicLibrary {
 			if(cover != null){
 				mp3.setCover(DatatypeConverter.parseBase64Binary(cover.getElementsByTagName("data").item(0).getTextContent()));
 				mp3.setCoverMimeType(cover.getAttribute("mimetype"));
-				mp3.setCoverDescription(cover.getElementsByTagName("description").item(0).getNodeValue());
+				String desc = cover.getElementsByTagName("description").item(0).getNodeValue();
+				mp3.setCoverDescription(desc == null ? "" : desc);
 			}
 			
 			NodeList el = elem.getElementsByTagName("ignoredtag");
@@ -265,7 +266,7 @@ public class MusicLibrary {
 		XPathExpression expr = xpath.compile("//file[@path='" + f.getPath() + "']");
 		NodeList nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 		Element e = (Element) nl.item(0);
-		if(e != null && xmlLocation.lastModified() > f.lastModified()){
+		if(e != null && xmlLocation.lastModified() >= f.lastModified()){
 			return (MP3File) buildFromCache(e);
 		} else
 			return null;

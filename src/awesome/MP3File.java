@@ -51,6 +51,7 @@ public class MP3File implements FilePathInfo {
 		dirty |= (cover != null);
 		this.cover = null;	
 		this.coverMimeType = "";
+		this.coverDescription = "";
 	}
 	
 	/**
