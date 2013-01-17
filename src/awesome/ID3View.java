@@ -49,8 +49,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); 
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				MP3File mp3 = getSelectedMP3();
-				if(mp3 != null) saveToMP3File(mp3);
+				saveToMP3File(getSelectedMP3());
 				AwesomeID3.getController().exitApplication();
 			}
 		});
@@ -158,10 +157,8 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 		itemSave.addActionListener(new ActionListener(){
 
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				MP3File mp3 = getSelectedMP3();				
-				if(mp3 != null) 
-					saveToMP3File(mp3);
+			public void actionPerformed(ActionEvent arg0) { 
+				saveToMP3File(getSelectedMP3());
 				
 				try {
 					AwesomeID3.getController().getMusicLibrary().saveAllDirtyFiles(); //save all modified files					
@@ -176,6 +173,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				saveToMP3File(getSelectedMP3());
 				AwesomeID3.getController().changeMusicLibrary();
 			}
 			
@@ -186,7 +184,12 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AwesomeID3.getController().reloadMusicLibrary((e.getModifiers() & ActionEvent.ALT_MASK) > 0);
+				int result = JOptionPane.showConfirmDialog(null, 
+					      "Omit all changes and reload files from last saved state?", 
+					      "Reload MP3", 
+					      JOptionPane.YES_NO_OPTION);
+				if(result == JOptionPane.YES_OPTION)
+					AwesomeID3.getController().reloadMusicLibrary((e.getModifiers() & ActionEvent.ALT_MASK) > 0);
 			}
 		});
 		
@@ -372,6 +375,7 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 
 
 	private void saveToMP3File(MP3File mp3) {
+		if(mp3 == null) return;
 		mp3.setAlbum(albumField.getText());
 		mp3.setArtist(artistField.getText());
 		mp3.setTitle(titleField.getText());

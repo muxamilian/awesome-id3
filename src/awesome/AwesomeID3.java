@@ -85,8 +85,8 @@ public class AwesomeID3 {
 	private void setMusicLibrary(MusicLibrary musicLib) {
 		this.musicLib = musicLib;
 	}
-
-	public void exitApplication() {
+	
+	private void handleDirty(){
 		if (musicLib.checkDirty()) { //unsaved mp3s?
 			if (view.askUserForDirtyFiles()) { //does the user want to save?
 				try {
@@ -96,8 +96,10 @@ public class AwesomeID3 {
 				}
 			}
 		}
-		if(!musicLib.cacheExists())
-			musicLib.saveXML();
+	}
+
+	public void exitApplication() {
+		handleDirty();
 		System.exit(0);
 	}
 
@@ -106,15 +108,7 @@ public class AwesomeID3 {
 	}
 
 	public void changeMusicLibrary() {
-		if (musicLib.checkDirty()) { //unsaved mp3s?
-			if (view.askUserForDirtyFiles()) { //does the user want to save?
-				try {
-					musicLib.saveAllDirtyFiles(); //save it
-				} catch (IOException e) {
-					view.presentException(e);
-				}
-			}
-		}
+		handleDirty();
 		chooseMusicLibrary();
 		view.changeMusicLibrary(musicLib);
 	}
