@@ -1,11 +1,25 @@
 package awesome;
 
+/**
+ * stores the data of an unknown id3 frame.
+ * @author me
+ *
+ */
+
 public class ID3Frame {
 	
 	private String id;
 	private int size;
 	private int flags;
 	private byte[] data;
+	
+	/**
+	 * init with all necessary data.
+	 * @param id
+	 * @param size
+	 * @param flags
+	 * @param data
+	 */
 	
 	public ID3Frame(String id, int size, int flags, byte[] data) {
 		this.id = id;

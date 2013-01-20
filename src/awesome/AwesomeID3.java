@@ -47,9 +47,6 @@ public class AwesomeID3 {
 		return controller;
 	}
 
-	public AwesomeID3() {
-	}
-
 	private void initViewAndShow() {
 		view = new ID3View();
 		view.setVisible(true);
@@ -97,15 +94,28 @@ public class AwesomeID3 {
 			}
 		}
 	}
+	
+	/**
+	 * checks for dirty files and calls System.exit() if user doesn't cancel.
+	 */
 
 	public void exitApplication() {
 		handleDirty();
 		System.exit(0);
 	}
+	
+	/**
+	 * central access point for the ID3View.
+	 * @return
+	 */
 
 	public ID3View getView() {
 		return view;
 	}
+	
+	/**
+	 * implements the menu command Change Directory
+	 */
 
 	public void changeMusicLibrary() {
 		handleDirty();
