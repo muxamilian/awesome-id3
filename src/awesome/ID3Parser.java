@@ -206,7 +206,7 @@ public class ID3Parser {
 		//write magic bytes and size of tag
 		dos.write(ID3_HEADER_START); //write Header start
 		dos.writeByte(mp3.getHeaderFlags());
-		dos.writeAsSynchSafe(Math.max(mp3.getTagSize(), newTagSize));
+		dos.writeAsSyncSafe(Math.max(mp3.getTagSize(), newTagSize));
 		
 		// write the four elemental text frames and the cover
 		dos.writeTextFrame("TPE1", artistData);
@@ -214,7 +214,7 @@ public class ID3Parser {
 		dos.writeTextFrame("TIT2", titleData);
 		dos.writeTextFrame("TYER", yearData);
 		
-		// write all the unkown frames not modified by our software
+		// write all the unknown frames not modified by our software
 		for(ID3Frame frame : mp3.getUnknownFrames()){
 			dos.writeFrame(frame);
 		}

@@ -83,42 +83,33 @@ public class MusicLibrary {
 	}
 	
 	private FilePathInfo buildFromCache(Element elem){
-		NodeList children = elem.getChildNodes();
-		if(elem.getNodeName() == "file") {
-			MP3File mp3 = new MP3File(new File(elem.getAttribute("path")));
-			mp3.setTitle(elem.getElementsByTagName("title").item(0).getFirstChild().getNodeValue());
-			mp3.setArtist(elem.getElementsByTagName("artist").item(0).getFirstChild().getNodeValue());
-			mp3.setAlbum(elem.getElementsByTagName("album").item(0).getFirstChild().getNodeValue());
-			mp3.setYear(elem.getElementsByTagName("year").item(0).getFirstChild().getNodeValue());
-			Element cover = (Element) elem.getElementsByTagName("cover").item(0);
-			if(cover != null){
-				mp3.setCover(DatatypeConverter.parseBase64Binary(cover.getElementsByTagName("data").item(0).getTextContent()));
-				mp3.setCoverMimeType(cover.getAttribute("mimetype"));
-				String desc = cover.getElementsByTagName("description").item(0).getNodeValue();
-				mp3.setCoverDescription(desc == null ? "" : desc);
-			}
-			
-			NodeList el = elem.getElementsByTagName("ignoredtag");
-			for(int i = 0; i < el.getLength(); i++){
-				Element itag = (Element) el.item(i);
-				String id = itag.getAttribute("frameid");
-				int size = Integer.parseInt(itag.getAttribute("size"));
-				int flags = Integer.parseInt(itag.getAttribute("flags"));
-				byte[] data = DatatypeConverter.parseBase64Binary(itag.getTextContent());
-				ID3Frame frame = new ID3Frame(id, size, flags, data);
-				mp3.addUnknownFrame(frame);
-			}
-			
-			mp3.setTagSize(Integer.parseInt(elem.getAttribute("tagsize")));
-			mp3.setDirty(false);
-			return mp3;
-		} else {
-			Directory directory = new Directory(new File(elem.getAttribute("path")));
-			for(int i=0; i<children.getLength(); i++) {
-				directory.addChild(buildFromCache((Element) children.item(i)));
-			}
-			return directory;
+		MP3File mp3 = new MP3File(new File(elem.getAttribute("path")));
+		mp3.setTitle(elem.getElementsByTagName("title").item(0).getFirstChild().getNodeValue());
+		mp3.setArtist(elem.getElementsByTagName("artist").item(0).getFirstChild().getNodeValue());
+		mp3.setAlbum(elem.getElementsByTagName("album").item(0).getFirstChild().getNodeValue());
+		mp3.setYear(elem.getElementsByTagName("year").item(0).getFirstChild().getNodeValue());
+		Element cover = (Element) elem.getElementsByTagName("cover").item(0);
+		if(cover != null){
+			mp3.setCover(DatatypeConverter.parseBase64Binary(cover.getElementsByTagName("data").item(0).getTextContent()));
+			mp3.setCoverMimeType(cover.getAttribute("mimetype"));
+			String desc = cover.getElementsByTagName("description").item(0).getNodeValue();
+			mp3.setCoverDescription(desc == null ? "" : desc);
 		}
+		
+		NodeList el = elem.getElementsByTagName("ignoredtag");
+		for(int i = 0; i < el.getLength(); i++){
+			Element itag = (Element) el.item(i);
+			String id = itag.getAttribute("frameid");
+			int size = Integer.parseInt(itag.getAttribute("size"));
+			int flags = Integer.parseInt(itag.getAttribute("flags"));
+			byte[] data = DatatypeConverter.parseBase64Binary(itag.getTextContent());
+			ID3Frame frame = new ID3Frame(id, size, flags, data);
+			mp3.addUnknownFrame(frame);
+		}
+		
+		mp3.setTagSize(Integer.parseInt(elem.getAttribute("tagsize")));
+		mp3.setDirty(false);
+		return mp3;
 	}
 	
 	/**
