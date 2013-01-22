@@ -47,10 +47,8 @@ public class MusicLibrary {
 			}
 		}
 		// Save the cache at startup
-		// More complicated alternative needed that throws files out when necessary and adds new ones...
-		if(!cacheExists()) {
-			saveXML();
-		}
+		// Is performant because the files are read from cache before
+		saveXML();
 	}
 	
 	/**
