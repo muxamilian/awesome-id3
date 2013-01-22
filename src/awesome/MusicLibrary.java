@@ -46,6 +46,11 @@ public class MusicLibrary {
 				e.printStackTrace();
 			}
 		}
+		// Save the cache at startup
+		// More complicated alternative needed that throws files out when necessary and adds new ones...
+		if(!cacheExists()) {
+			saveXML();
+		}
 	}
 	
 	/**
