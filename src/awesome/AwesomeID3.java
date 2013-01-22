@@ -5,6 +5,12 @@ import java.io.IOException;
 
 import javax.swing.JFileChooser;
 
+/**
+ * The main controller, accessible through the singleton method getController(). Contains main.
+ * @author me
+ *
+ */
+
 public class AwesomeID3 {
 
 	// Singleton pattern variable

@@ -5,6 +5,11 @@ import java.io.IOException;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 
+/**
+ * Subclass of RandomAccessFile which adds some utility methods for writing id3 tags.
+ *
+ */
+
 public class ID3Output extends RandomAccessFile {
 	
 	public ID3Output(File out, boolean rewrite) throws IOException {
