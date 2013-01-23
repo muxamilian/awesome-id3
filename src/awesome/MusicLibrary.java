@@ -1,19 +1,31 @@
 package awesome;
 
+import static java.nio.file.StandardCopyOption.*;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Calendar;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import javax.xml.xpath.*;
 
 import org.w3c.dom.*;
 
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * This class is used to store the current working directory and (later)
@@ -78,10 +90,12 @@ public class MusicLibrary {
 		return rootDir;
 	}
 	
-	private void readXML() throws Exception {		
+	private void readXML() throws ParserConfigurationException, SAXException, IOException {		
 		if(!xmlLocation.exists()) return;
 		docFactory = DocumentBuilderFactory.newInstance();
+		docFactory.setValidating(true);
 		docBuilder = docFactory.newDocumentBuilder();
+		docBuilder.setErrorHandler(new DefaultHandler());
 		doc = docBuilder.parse(xmlLocation);
 	}
 	
@@ -121,6 +135,11 @@ public class MusicLibrary {
 	
 	public void saveXML(){	
 		try {
+			// Copy dtd to library folder. There is no easier solution
+			Path in = Paths.get("./misc/cache.dtd");
+			Path out = Paths.get(new File(rootDir.getFile().getAbsolutePath()+"/cache.dtd").getAbsolutePath());
+			Files.copy(in, out, REPLACE_EXISTING);
+			
 			// initializiation
 			docFactory = DocumentBuilderFactory.newInstance();
 			docBuilder = docFactory.newDocumentBuilder();
@@ -141,6 +160,7 @@ public class MusicLibrary {
 			
 			StreamResult result =  new StreamResult(xmlLocation);
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "cache.dtd");
 			transformer.transform(source, result);
 		} catch(Exception ex){
 			if(AwesomeID3.getController().getView() != null){
