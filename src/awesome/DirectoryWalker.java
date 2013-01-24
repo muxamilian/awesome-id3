@@ -44,7 +44,8 @@ public class DirectoryWalker {
 						continue;
 					}
 				} else {
-					System.out.println("Parsed from Cache: " + f);
+					// Not neccessary
+//					System.out.println("Parsed from Cache: " + f);
 				}
 				rootDir.addChild(mp3);
 			}

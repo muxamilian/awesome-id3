@@ -4,15 +4,13 @@
 <!ELEMENT folder (ignoredfile|file|folder)*>
 
 <!ELEMENT ignoredfile EMPTY>
-<!ELEMENT file (tags)>
+<!ELEMENT file (title|artist|album|year|cover|ignoredtag)*>
 
-<!ELEMENT tags (title|artist|album|year|cover|ignoredtag)*>
-
-<!ELEMENT title (text)>
-<!ELEMENT artist (text)>
-<!ELEMENT album (text)>
-<!ELEMENT year (text)>
-<!ELEMENT cover (mimetype,pictype,description,data)>
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT artist (#PCDATA)>
+<!ELEMENT album (#PCDATA)>
+<!ELEMENT year (#PCDATA)>
+<!ELEMENT cover (mimetype,description,data)>
 <!ELEMENT ignoredtag (#PCDATA)>
 
 <!ELEMENT text (#PCDATA)>
@@ -23,18 +21,20 @@
 
 <!ATTLIST cache timestamp CDATA #REQUIRED>
 <!ATTLIST folder name CDATA #REQUIRED>
-<!ATTLIST ignoredfile name CDATA #REQUIRED>
+<!ATTLIST ignoredfile name CDATA #IMPLIED>
 <!ATTLIST file
 	name CDATA #REQUIRED
 	version      CDATA #IMPLIED
-	size         CDATA #REQUIRED
+	size         CDATA #IMPLIED
+	path				 CDATA #IMPLIED
+	tagsize 		 CDATA #IMPLIED
 	unsync       (yes | no) "no"
 	extended     (yes | no) "no"
 	experimental (yes | no) "no"
 >
 
 <!ATTLIST title
-	size       CDATA #REQUIRED
+	size       CDATA #IMPLIED
 	groupByte  CDATA #IMPLIED
 	tapres     (yes | no) "no"
 	fapres     (yes | no) "no"
@@ -44,8 +44,8 @@
 	groupID    (yes | no) "no"
 >
 <!ATTLIST artist
-	frameid    CDATA #REQUIRED
-	size       CDATA #REQUIRED
+	frameid    CDATA #IMPLIED
+	size       CDATA #IMPLIED
 	groupByte  CDATA #IMPLIED
 	tapres     (yes | no) "no"
 	fapres     (yes | no) "no"
@@ -55,7 +55,7 @@
 	groupID    (yes | no) "no"
 >
 <!ATTLIST album
-	size       CDATA #REQUIRED
+	size       CDATA #IMPLIED
 	groupByte  CDATA #IMPLIED
 	tapres     (yes | no) "no"
 	fapres     (yes | no) "no"
@@ -65,7 +65,7 @@
 	groupID    (yes | no) "no"
 >
 <!ATTLIST year
-	size       CDATA #REQUIRED
+	size       CDATA #IMPLIED
 	groupByte  CDATA #IMPLIED
 	tapres     (yes | no) "no"
 	fapres     (yes | no) "no"
@@ -75,7 +75,7 @@
 	groupID    (yes | no) "no"
 >
 <!ATTLIST cover
-	size       CDATA #REQUIRED
+	size       CDATA #IMPLIED
 	groupByte  CDATA #IMPLIED
 	tapres     (yes | no) "no"
 	fapres     (yes | no) "no"
@@ -85,8 +85,9 @@
 	groupID    (yes | no) "no"
 >
 <!ATTLIST ignoredtag
-	frameid    CDATA #REQUIRED
-	size       CDATA #REQUIRED
+	flags			 CDATA #REQUIRED
+	frameid    CDATA #IMPLIED
+	size       CDATA #IMPLIED
 	groupByte  CDATA #IMPLIED
 	tapres     (yes | no) "no"
 	fapres     (yes | no) "no"

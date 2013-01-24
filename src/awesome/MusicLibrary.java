@@ -2,30 +2,23 @@ package awesome;
 
 import static java.nio.file.StandardCopyOption.*;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Calendar;
 
-import javax.xml.XMLConstants;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 import javax.xml.xpath.*;
 
 import org.w3c.dom.*;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * This class is used to store the current working directory and (later)
@@ -95,7 +88,8 @@ public class MusicLibrary {
 		docFactory = DocumentBuilderFactory.newInstance();
 		docFactory.setValidating(true);
 		docBuilder = docFactory.newDocumentBuilder();
-		docBuilder.setErrorHandler(new DefaultHandler());
+		// All built in error-handlers just suppress the warnings. So we don't use any...
+		docBuilder.setErrorHandler(new AwesomeXmlErrorHandler());
 		doc = docBuilder.parse(xmlLocation);
 	}
 	
