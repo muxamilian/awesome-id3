@@ -1,0 +1,98 @@
+<?xml encoding="utf-8"?>
+<!ELEMENT cache (folder)>
+
+<!ELEMENT folder (ignoredfile|file|folder)*>
+
+<!ELEMENT ignoredfile EMPTY>
+<!ELEMENT file (title|artist|album|year|cover|ignoredtag)*>
+
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT artist (#PCDATA)>
+<!ELEMENT album (#PCDATA)>
+<!ELEMENT year (#PCDATA)>
+<!ELEMENT cover (mimetype,description,data)>
+<!ELEMENT ignoredtag (#PCDATA)>
+
+<!ELEMENT text (#PCDATA)>
+<!ELEMENT mimetype (#PCDATA)>
+<!ELEMENT pictype (#PCDATA)>
+<!ELEMENT description (#PCDATA)>
+<!ELEMENT data (#PCDATA)>
+
+<!ATTLIST cache timestamp CDATA #REQUIRED>
+<!ATTLIST folder name CDATA #REQUIRED>
+<!ATTLIST ignoredfile name CDATA #IMPLIED>
+<!ATTLIST file
+	name CDATA #REQUIRED
+	version      CDATA #IMPLIED
+	size         CDATA #IMPLIED
+	path				 CDATA #IMPLIED
+	tagsize 		 CDATA #IMPLIED
+	unsync       (yes | no) "no"
+	extended     (yes | no) "no"
+	experimental (yes | no) "no"
+>
+
+<!ATTLIST title
+	size       CDATA #IMPLIED
+	groupByte  CDATA #IMPLIED
+	tapres     (yes | no) "no"
+	fapres     (yes | no) "no"
+	readonly   (yes | no) "no"
+	compressed (yes | no) "no"
+	encrypted  (yes | no) "no"
+	groupID    (yes | no) "no"
+>
+<!ATTLIST artist
+	frameid    CDATA #IMPLIED
+	size       CDATA #IMPLIED
+	groupByte  CDATA #IMPLIED
+	tapres     (yes | no) "no"
+	fapres     (yes | no) "no"
+	readonly   (yes | no) "no"
+	compressed (yes | no) "no"
+	encrypted  (yes | no) "no"
+	groupID    (yes | no) "no"
+>
+<!ATTLIST album
+	size       CDATA #IMPLIED
+	groupByte  CDATA #IMPLIED
+	tapres     (yes | no) "no"
+	fapres     (yes | no) "no"
+	readonly   (yes | no) "no"
+	compressed (yes | no) "no"
+	encrypted  (yes | no) "no"
+	groupID    (yes | no) "no"
+>
+<!ATTLIST year
+	size       CDATA #IMPLIED
+	groupByte  CDATA #IMPLIED
+	tapres     (yes | no) "no"
+	fapres     (yes | no) "no"
+	readonly   (yes | no) "no"
+	compressed (yes | no) "no"
+	encrypted  (yes | no) "no"
+	groupID    (yes | no) "no"
+>
+<!ATTLIST cover
+	size       CDATA #IMPLIED
+	groupByte  CDATA #IMPLIED
+	tapres     (yes | no) "no"
+	fapres     (yes | no) "no"
+	readonly   (yes | no) "no"
+	compressed (yes | no) "no"
+	encrypted  (yes | no) "no"
+	groupID    (yes | no) "no"
+>
+<!ATTLIST ignoredtag
+	flags			 CDATA #REQUIRED
+	frameid    CDATA #IMPLIED
+	size       CDATA #IMPLIED
+	groupByte  CDATA #IMPLIED
+	tapres     (yes | no) "no"
+	fapres     (yes | no) "no"
+	readonly   (yes | no) "no"
+	compressed (yes | no) "no"
+	encrypted  (yes | no) "no"
+	groupID    (yes | no) "no"
+>

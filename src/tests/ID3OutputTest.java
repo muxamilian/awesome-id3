@@ -15,7 +15,7 @@ public class ID3OutputTest {
 	public void testWriteAsSynchSafe() throws IOException {
 		File tmp = File.createTempFile("id3outputtest", "bin");
 		ID3Output out = new ID3Output(tmp, false);
-		out.writeAsSynchSafe(1234567);
+		out.writeAsSyncSafe(1234567);
 		byte[] data = Files.readAllBytes(tmp.toPath());
 		assertArrayEquals(data, new byte[]{0,75,45,7});
 		out.close();

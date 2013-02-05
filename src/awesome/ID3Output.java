@@ -25,7 +25,7 @@ public class ID3Output extends RandomAccessFile {
 	 * @throws IOException
 	 */
 	
-	public void writeAsSynchSafe(int newTagSize) throws IOException {
+	public void writeAsSyncSafe(int newTagSize) throws IOException {
 		byte[] ret = new byte[4];
 		for(int i = 3; i >= 0; i--){
 			ret[3-i] = (byte) ((newTagSize & (0x7F << i*7)) >> (i*7));

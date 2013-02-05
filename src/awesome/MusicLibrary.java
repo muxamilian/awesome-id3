@@ -1,7 +1,11 @@
 package awesome;
 
+import static java.nio.file.StandardCopyOption.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Calendar;
 
 import javax.xml.bind.DatatypeConverter;
@@ -14,6 +18,7 @@ import javax.xml.xpath.*;
 import org.w3c.dom.*;
 
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 /**
  * This class is used to store the current working directory and (later)
@@ -46,6 +51,9 @@ public class MusicLibrary {
 				e.printStackTrace();
 			}
 		}
+		// Save the cache at startup
+		// Is performant because the files are read from cache before
+		saveXML();
 	}
 	
 	/**
@@ -75,50 +83,44 @@ public class MusicLibrary {
 		return rootDir;
 	}
 	
-	private void readXML() throws Exception {		
+	private void readXML() throws ParserConfigurationException, SAXException, IOException {		
 		if(!xmlLocation.exists()) return;
 		docFactory = DocumentBuilderFactory.newInstance();
+		docFactory.setValidating(true);
 		docBuilder = docFactory.newDocumentBuilder();
+		// All built in error-handlers just suppress the warnings. So we don't use any...
+		docBuilder.setErrorHandler(new AwesomeXmlErrorHandler());
 		doc = docBuilder.parse(xmlLocation);
 	}
 	
 	private FilePathInfo buildFromCache(Element elem){
-		NodeList children = elem.getChildNodes();
-		if(elem.getNodeName() == "file") {
-			MP3File mp3 = new MP3File(new File(elem.getAttribute("path")));
-			mp3.setTitle(elem.getElementsByTagName("title").item(0).getFirstChild().getNodeValue());
-			mp3.setArtist(elem.getElementsByTagName("artist").item(0).getFirstChild().getNodeValue());
-			mp3.setAlbum(elem.getElementsByTagName("album").item(0).getFirstChild().getNodeValue());
-			mp3.setYear(elem.getElementsByTagName("year").item(0).getFirstChild().getNodeValue());
-			Element cover = (Element) elem.getElementsByTagName("cover").item(0);
-			if(cover != null){
-				mp3.setCover(DatatypeConverter.parseBase64Binary(cover.getElementsByTagName("data").item(0).getTextContent()));
-				mp3.setCoverMimeType(cover.getAttribute("mimetype"));
-				String desc = cover.getElementsByTagName("description").item(0).getNodeValue();
-				mp3.setCoverDescription(desc == null ? "" : desc);
-			}
-			
-			NodeList el = elem.getElementsByTagName("ignoredtag");
-			for(int i = 0; i < el.getLength(); i++){
-				Element itag = (Element) el.item(i);
-				String id = itag.getAttribute("frameid");
-				int size = Integer.parseInt(itag.getAttribute("size"));
-				int flags = Integer.parseInt(itag.getAttribute("flags"));
-				byte[] data = DatatypeConverter.parseBase64Binary(itag.getTextContent());
-				ID3Frame frame = new ID3Frame(id, size, flags, data);
-				mp3.addUnknownFrame(frame);
-			}
-			
-			mp3.setTagSize(Integer.parseInt(elem.getAttribute("tagsize")));
-			mp3.setDirty(false);
-			return mp3;
-		} else {
-			Directory directory = new Directory(new File(elem.getAttribute("path")));
-			for(int i=0; i<children.getLength(); i++) {
-				directory.addChild(buildFromCache((Element) children.item(i)));
-			}
-			return directory;
+		MP3File mp3 = new MP3File(new File(elem.getAttribute("path")));
+		mp3.setTitle(elem.getElementsByTagName("title").item(0).getFirstChild().getNodeValue());
+		mp3.setArtist(elem.getElementsByTagName("artist").item(0).getFirstChild().getNodeValue());
+		mp3.setAlbum(elem.getElementsByTagName("album").item(0).getFirstChild().getNodeValue());
+		mp3.setYear(elem.getElementsByTagName("year").item(0).getFirstChild().getNodeValue());
+		Element cover = (Element) elem.getElementsByTagName("cover").item(0);
+		if(cover != null){
+			mp3.setCover(DatatypeConverter.parseBase64Binary(cover.getElementsByTagName("data").item(0).getTextContent()));
+			mp3.setCoverMimeType(cover.getAttribute("mimetype"));
+			String desc = cover.getElementsByTagName("description").item(0).getNodeValue();
+			mp3.setCoverDescription(desc == null ? "" : desc);
 		}
+		
+		NodeList el = elem.getElementsByTagName("ignoredtag");
+		for(int i = 0; i < el.getLength(); i++){
+			Element itag = (Element) el.item(i);
+			String id = itag.getAttribute("frameid");
+			int size = Integer.parseInt(itag.getAttribute("size"));
+			int flags = Integer.parseInt(itag.getAttribute("flags"));
+			byte[] data = DatatypeConverter.parseBase64Binary(itag.getTextContent());
+			ID3Frame frame = new ID3Frame(id, size, flags, data);
+			mp3.addUnknownFrame(frame);
+		}
+		
+		mp3.setTagSize(Integer.parseInt(elem.getAttribute("tagsize")));
+		mp3.setDirty(false);
+		return mp3;
 	}
 	
 	/**
@@ -127,6 +129,11 @@ public class MusicLibrary {
 	
 	public void saveXML(){	
 		try {
+			// Copy dtd to library folder. There is no easier solution
+			Path in = Paths.get("./misc/cache.dtd");
+			Path out = Paths.get(new File(rootDir.getFile().getAbsolutePath()+"/cache.dtd").getAbsolutePath());
+			Files.copy(in, out, REPLACE_EXISTING);
+			
 			// initializiation
 			docFactory = DocumentBuilderFactory.newInstance();
 			docBuilder = docFactory.newDocumentBuilder();
@@ -147,6 +154,7 @@ public class MusicLibrary {
 			
 			StreamResult result =  new StreamResult(xmlLocation);
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "cache.dtd");
 			transformer.transform(source, result);
 		} catch(Exception ex){
 			if(AwesomeID3.getController().getView() != null){

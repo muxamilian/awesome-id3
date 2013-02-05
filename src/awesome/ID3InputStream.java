@@ -91,7 +91,7 @@ public class ID3InputStream extends DataInputStream {
 	}
 	
 	/**
-	 * interprete the next byte as charset
+	 * interpret the next byte as charset
 	 * @return
 	 * @throws IOException
 	 */
