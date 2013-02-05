@@ -28,7 +28,7 @@ public class ID3OutputTest {
 		ID3Output out = new ID3Output(tmp, false);
 		out.writeTextFrame("TPE1", "John Lennon".getBytes("ISO-8859-1"));
 		byte[] data = Files.readAllBytes(tmp.toPath());
-		assertArrayEquals(data, new byte[]{84,80,69,49,0,0,0,12,0,0,0,74,111,104,110,32,76,101,110,110,111,110});
+		assertArrayEquals(data, new byte[]{84,80,69,49,0,0,0,12,0,0,3,74,111,104,110,32,76,101,110,110,111,110});
 		out.close();
 		tmp.delete();
 	}
