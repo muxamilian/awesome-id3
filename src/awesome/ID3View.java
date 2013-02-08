@@ -76,7 +76,8 @@ public class ID3View extends JFrame implements TreeSelectionListener, TreeExpans
 	      JOptionPane.YES_NO_OPTION); 	      
 	      
 	      switch(result) { 
-	         case JOptionPane.YES_OPTION: return true;  	 
+	         case JOptionPane.YES_OPTION: 
+	        	 return true;  	 
 	 
 	         default: 
 	        	 return false; 
