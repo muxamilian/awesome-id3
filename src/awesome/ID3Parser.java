@@ -170,7 +170,7 @@ public class ID3Parser {
 	public static void save(MP3File mp3) throws IOException{
 		if(!mp3.isDirty()) return; //if nothing changed, we don't need to save anything
 		
-		//we always use ISO-8859-1 as it is the ID3 standard encoding
+		//we always use UTF-8 as it is the ID3 standard encoding
 		Charset cs = Charset.forName("UTF-8");
 		
 		//convert strings to byte arrays so that the length can be determined
